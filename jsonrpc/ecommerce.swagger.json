@@ -1,1 +1,2667 @@
-{"swagger":"2.0","info":{"title":"电商OpenApi","version":null,"description":"电商可以通过OpenApi下单，获取包裹详情，获取面单，获取物流轨迹，修复异常包裹。\n\n## 认证\n\n使用APIKEY + HMAC256签名的认证方式， 生成验证字符串，并放在`Authorization` HEADER中，具体格式为:\n\nAuthorization:GPX-HMAC256 APIKEY={apikey},TIMESTAMP={timestamp},NONCE={nonce},SIGN={sign}\n\n\n|名称           | 描述                           |\n|--------------|--------------------------------|\n|`GPX-HMAC256` | 为固定值，注意后面要跟一个空格' ' |\n|`APIKEY`      | 为ParcelX分配的APIKEY，可在登录后台获取|\n|`TIMESTAMP`   | 为UNIX时间戳，注意这里是毫秒数      |\n|`NONCE`       | 为4～8位的随机数字                 |\n|`SIGN`        | 为HMAC256(utf8_bytes(`APIKEY` + `TIMESTAMP` + `NONCE` + `HTTP_BODY`)), HMAC256的SecretKey为 `APIKEY` 对应的 `API_SECRET`|\n\n其中 `API_SECRET` 为 `APIKEY` 对应的密钥，可以登录后台查看；`HTTP_BODY` 为HTTP请求中的Body内容字符串"},"basePath":"/","tags":[],"schemas":["http","https"],"paths":{"/openapi/v1/ecommerce/jsonrpc#createParcel":{"post":{"tags":[],"summary":"createParcel","description":"创建包裹","consumes":["application/json"],"parameters":[{"name":"createParcel","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为createParcel","default":"createParcel"},"params":{"type":"object","required":["parcel","autoPlaceOrder"],"properties":{"parcel":{"type":"object","required":["routeCode","senderAddress","recipientPhone","payerIdNo","payerPhone","paymentAmount","senderPhone","paymentCompanyName","grossWeight","netWeight","senderName","itemAmount","payerLegalName","payerIdType","recipientName","paymentTime","recipientAddress","paymentOrderNo","items","tradeCountry","onlineOrderNo","senderCompanyName"],"description":"包裹信息","properties":{"routeCode":{"type":"string","required":true,"description":"链路识别码","maxLength":36},"routeNo":{"type":"string","description":"链路编号","maxLength":36},"onlineOrderNo":{"type":"string","required":true,"description":"线上订单号","maxLength":100},"facility":{"type":"string","description":"发货人站点代码","maxLength":100},"lot":{"type":"string","description":"批次号","maxLength":100},"type":{"type":"integer","description":"包裹类型: [0 普通包裹;]","default":"0"},"skuNumber":{"type":"integer","description":"包裹里面的sku种类数量","minimum":0.0},"volume":{"type":"number","description":"体积","minimum":0.0},"grossWeight":{"type":"number","required":true,"description":"毛重","minimum":0.0},"netWeight":{"type":"number","required":true,"description":"净重","minimum":0.0},"weightUnit":{"type":"string","description":"重量单位 公斤kg default kg optional","default":"kg"},"insuranceFee":{"type":"number","description":"保险费 optional 默认是0","minimum":0.0,"default":"0.0"},"discount":{"type":"number","description":"包裹折扣 默认是0","minimum":0.0,"default":"0.0"},"totalTax":{"type":"number","description":"包裹税费 默认是0","minimum":0.0,"default":"0.0"},"freight":{"type":"number","description":"运杂费 默认是0","minimum":0.0,"default":"0.0"},"itemAmount":{"type":"number","required":true,"description":"包裹总金额","minimum":0.0},"tradeCountry":{"type":"string","required":true,"description":"包裹贸易国, 使用ISO二字码，例如CN"},"payerLegalName":{"type":"string","required":true,"description":"付款人法定姓名","maxLength":50},"payerIdType":{"type":"string","required":true,"description":"付款人证件类型","maxLength":30},"payerIdNo":{"type":"string","required":true,"description":"付款人证件号","maxLength":30},"payerPhone":{"type":"string","required":true,"description":"付款人手机号","maxLength":30},"payerIdPicture":{"type":"string","description":"付款人证件照","maxLength":255},"payerIdPicture2":{"type":"string","description":"付款人证件照_2","maxLength":255},"paymentCompanyName":{"type":"string","required":true,"description":"支付公司","maxLength":100},"paymentCompanyCode":{"type":"string","description":"支付公司编码","maxLength":50},"paymentOrderNo":{"type":"string","required":true,"description":"支付流水编号","maxLength":100},"paymentTime":{"type":"string","required":true,"description":"支付时间","format":"date-time"},"paymentAmount":{"type":"number","required":true,"description":"支付金额","minimum":0.0},"paymentCurrency":{"type":"string","description":"支付货币, ISO标准，例如CNY, 默认CNY","default":"CNY"},"senderIdType":{"type":"string","description":"发件人证件类型","maxLength":30},"senderIdNo":{"type":"string","description":"发件人证件号","maxLength":30},"senderIdcardFront":{"type":"string","description":"寄件人身份证号正面URL","maxLength":255},"senderIdcardBack":{"type":"string","description":"寄件人身份证号反面URL","maxLength":255},"senderCountryCode":{"type":"string","description":"发件人国家编号 ISO 2字码"},"senderPrimaryAdministrative":{"type":"string","description":"发件人一级行政区","maxLength":100},"senderSecondAdministrative":{"type":"string","description":"发件人二级行政区","maxLength":100},"senderAddress":{"type":"string","required":true,"description":"发件人地址","maxLength":100},"senderStreetNum":{"type":"string","description":"发件人门牌号","maxLength":100},"senderPostcode":{"type":"string","description":"发件人邮编","maxLength":100},"senderCompanyName":{"type":"string","required":true,"description":"发件人公司","maxLength":100},"senderName":{"type":"string","required":true,"description":"发件人姓名","maxLength":50},"senderPhone":{"type":"string","required":true,"description":"发件人手机号","maxLength":30},"senderEmail":{"type":"string","description":"发件人邮箱","maxLength":100},"recipientIdType":{"type":"string","description":"收件人证件类型","maxLength":100},"recipientIdNo":{"type":"string","description":"收件人证件号","maxLength":100},"recipientCountryCode":{"type":"string","description":"收件人国家编号 ISO 二字码"},"recipientPrimaryAdministrative":{"type":"string","description":"收件人一级行政区","maxLength":100},"recipientSecondAdministrative":{"type":"string","description":"收件人二级行政区","maxLength":100},"recipientThirdAdministrative":{"type":"string","description":"收件人三级行政区","maxLength":100},"recipientAddress":{"type":"string","required":true,"description":"收件人地址","maxLength":100},"recipientStreetNum":{"type":"string","description":"收件人门牌号","maxLength":100},"recipientPostcode":{"type":"string","description":"收件人邮编","maxLength":100},"recipientCompanyName":{"type":"string","description":"收件人公司","maxLength":100},"recipientName":{"type":"string","required":true,"description":"收件人姓名","maxLength":50},"recipientPhone":{"type":"string","required":true,"description":"收件人电话","maxLength":30},"recipientEmail":{"type":"string","description":"收件人邮箱","maxLength":100},"returnPostcode":{"type":"string","description":"退件人邮编","maxLength":100},"returnStreetNum":{"type":"string","description":"退件人门牌号","maxLength":100},"returnAddress":{"type":"string","description":"退件人详细地址","maxLength":100},"returnSecondAdministrative":{"type":"string","description":"退件人二级行政区址","maxLength":100},"returnPrimaryAdministrative":{"type":"string","description":"退件人一级行政区","maxLength":100},"returnCountryCode":{"type":"string","description":"退件人国家编号"},"returnEmail":{"type":"string","description":"退件人邮箱"},"returnPhone":{"type":"string","description":"退件人电话","maxLength":30},"returnName":{"type":"string","description":"退件人名称","maxLength":30},"returnCompanyName":{"type":"string","description":"退件人企业名称","maxLength":100},"returnType":{"type":"string","description":"退件类型：back_to_owner 退给寄件人，back_to_other 退给其他人，destroy_local 原地销毁"},"buyerEcAccount":{"type":"string","description":"购买人在电商的账号","maxLength":30},"buyerFullName":{"type":"string","description":"购买人全名","maxLength":30},"buyerPhone":{"type":"string","description":"购买人电话","maxLength":30},"buyerIdType":{"type":"string","description":"购买人证件类型","maxLength":30},"buyerIdNo":{"type":"string","description":"购买人证件号码","maxLength":30},"buyerIdPicture":{"type":"string","description":"购买人证件照片","maxLength":255},"buyerIdPicture2":{"type":"string","description":"购买人证件照片2","maxLength":255},"predictPutTime":{"type":"string","description":"预计入库时间 预估什么时候送到物流商仓库的时间","format":"date-time"},"needSignature":{"type":"integer","description":"是否需要人签收，0不需要，1需要。默认不需要"},"dimensionUnit":{"type":"string","description":"尺寸单位：cm,m,默认cm","default":"cm"},"ebcName":{"type":"string","description":"电商企业的登记名称，对应清单的收发货人","maxLength":50},"ebcCode":{"type":"string","description":"电商企业在海关注册登记编号或统一社会信用代码，对应清单的收发货人","maxLength":50},"ebpName":{"type":"string","description":"电商平台的登记名称","maxLength":50},"ebpCode":{"type":"string","description":"电商平台在海关注册登记编号或统一社会信用代码","maxLength":50},"isDangerous":{"type":"boolean","description":"是否危险品","default":"false"},"vendors":{"type":"any","description":"非必须拓展字段"},"items":{"type":"array","required":true,"description":"商品列表","items":{"type":"object","required":["unitPrice","grossWeight","netWeight","quantity","hsCode","origin","specification","currency","itemNo","productUnit","productName","url"],"properties":{"itemNo":{"type":"string","required":true,"description":"货物编号","maxLength":100},"hsCode":{"type":"string","required":true,"description":"海关识别码","maxLength":100},"barCode":{"type":"string","description":"条形码","maxLength":100},"brand":{"type":"string","description":"品牌","maxLength":100},"productName":{"type":"string","required":true,"description":"货物名称","maxLength":100},"nativeProductName":{"type":"string","description":"本地化货物名称","maxLength":100},"productDescription":{"type":"string","description":"货物描述","maxLength":100},"productUnit":{"type":"string","required":true,"description":"货物单位","maxLength":100},"url":{"type":"string","required":true,"description":"商品url","maxLength":2000},"origin":{"type":"string","required":true,"description":"原产地","maxLength":100},"specification":{"type":"string","required":true,"description":"规格","maxLength":255},"grossWeight":{"type":"number","required":true,"description":"毛重","minimum":0.0},"netWeight":{"type":"number","required":true,"description":"净重","minimum":0.0},"unitPrice":{"type":"number","required":true,"description":"单价","minimum":0.0},"currency":{"type":"string","required":true,"description":"币种, ISO标准，例如CNY"},"quantity":{"type":"integer","required":true,"description":"数量","minimum":0.0}}},"minItems":1}}},"autoPlaceOrder":{"type":"boolean","required":true,"description":"是否自动下单，默认为true"}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"object","properties":{"parcelNo":{"type":"string"},"onlineOrderNo":{"type":"string"}}},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#placeOrder":{"post":{"tags":[],"summary":"placeOrder","description":"电商确认包裹上传","consumes":["application/json"],"parameters":[{"name":"placeOrder","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为placeOrder","default":"placeOrder"},"params":{"type":"object","required":["parcelNo"],"properties":{"parcelNo":{"type":"object","required":["type","value"],"description":"包裹编号","properties":{"value":{"type":"string","required":true,"description":"编号，类型由type决定","maxLength":36},"type":{"type":"string","required":true,"description":"编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号","enum":["PARCEL_NO","ORDER_NO","TRACKING_NO"]}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"null","required":true},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#getParcelList":{"post":{"tags":[],"summary":"getParcelList","description":"查询包裹单号","consumes":["application/json"],"parameters":[{"name":"getParcelList","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为getParcelList","default":"getParcelList"},"params":{"type":"object","required":["query"],"properties":{"query":{"type":"object","required":["criteria"],"description":"包裹查询参数","properties":{"criteria":{"type":"string","required":true,"description":"包裹查询条件, CREATED 查询已创建状态的包裹, COMMITTED 查询已经提交状态的包裹, PROCESSING 查询正在处理中的包裹, MISSING_LABEL 查询还没有面单数据的包裹, MISSING_TRACKING_NUMBER 查询还没有物流单号的包裹, EXCEPTION 查询异常的包裹, SERVICE_COMPLETE 查询服务完成的包裹, CONFIRM_COMPLETE 查询已经被电商确认服务完成的包裹, FAILED 查询所有失败的包裹","enum":["CREATED","COMMITTED","PROCESSING","MISSING_LABEL","MISSING_TRACKING_NUMBER","EXCEPTION","SERVICE_COMPLETE","CONFIRM_COMPLETE","FAILED"]},"startTime":{"type":"string","description":"开始时间，为null表示没有开始时间限制","format":"date-time"},"endTime":{"type":"string","description":"结束时间，为null表示没有结束时间限制","format":"date-time"},"pageSize":{"type":"integer","description":"一页返回多少记录","maximum":500.0,"minimum":0.0,"default":"20"},"pageNum":{"type":"integer","description":"当前页面索引，从0开始","minimum":0.0,"default":"0"}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"object","properties":{"total":{"type":"integer","description":"总共有多少记录"},"pageSize":{"type":"integer","description":"一页返回多少记录"},"pageNum":{"type":"integer","description":"当前页面索引，从0开始"},"list":{"type":"array","description":"包裹相关单号列表","items":{"type":"object","properties":{"parcelNumber":{"type":"string","description":"包裹单号"},"trackingNumber":{"type":"string","description":"物流单号"},"orderNumber":{"type":"string","description":"电商单号"}}}}}},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#getParcelInfo":{"post":{"tags":[],"summary":"getParcelInfo","description":"查询包裹信息","consumes":["application/json"],"parameters":[{"name":"getParcelInfo","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为getParcelInfo","default":"getParcelInfo"},"params":{"type":"object","required":["parcelNo"],"properties":{"parcelNo":{"type":"object","required":["type","value"],"description":"包裹编号","properties":{"value":{"type":"string","required":true,"description":"编号，类型由type决定","maxLength":36},"type":{"type":"string","required":true,"description":"编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号","enum":["PARCEL_NO","ORDER_NO","TRACKING_NO"]}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"object","required":["routeCode","senderAddress","recipientPhone","payerIdNo","payerPhone","paymentAmount","senderPhone","paymentCompanyName","grossWeight","netWeight","senderName","itemAmount","payerLegalName","payerIdType","recipientName","paymentTime","recipientAddress","paymentOrderNo","items","tradeCountry","onlineOrderNo","senderCompanyName"],"properties":{"routeCode":{"type":"string","required":true,"description":"链路识别码","maxLength":36},"routeNo":{"type":"string","description":"链路编号","maxLength":36},"onlineOrderNo":{"type":"string","required":true,"description":"线上订单号","maxLength":100},"facility":{"type":"string","description":"发货人站点代码","maxLength":100},"lot":{"type":"string","description":"批次号","maxLength":100},"type":{"type":"integer","description":"包裹类型: [0 普通包裹;]","default":"0"},"skuNumber":{"type":"integer","description":"包裹里面的sku种类数量","minimum":0.0},"volume":{"type":"number","description":"体积","minimum":0.0},"grossWeight":{"type":"number","required":true,"description":"毛重","minimum":0.0},"netWeight":{"type":"number","required":true,"description":"净重","minimum":0.0},"weightUnit":{"type":"string","description":"重量单位 公斤kg default kg optional","default":"kg"},"insuranceFee":{"type":"number","description":"保险费 optional 默认是0","minimum":0.0,"default":"0.0"},"discount":{"type":"number","description":"包裹折扣 默认是0","minimum":0.0,"default":"0.0"},"totalTax":{"type":"number","description":"包裹税费 默认是0","minimum":0.0,"default":"0.0"},"freight":{"type":"number","description":"运杂费 默认是0","minimum":0.0,"default":"0.0"},"itemAmount":{"type":"number","required":true,"description":"包裹总金额","minimum":0.0},"tradeCountry":{"type":"string","required":true,"description":"包裹贸易国, 使用ISO二字码，例如CN"},"payerLegalName":{"type":"string","required":true,"description":"付款人法定姓名","maxLength":50},"payerIdType":{"type":"string","required":true,"description":"付款人证件类型","maxLength":30},"payerIdNo":{"type":"string","required":true,"description":"付款人证件号","maxLength":30},"payerPhone":{"type":"string","required":true,"description":"付款人手机号","maxLength":30},"payerIdPicture":{"type":"string","description":"付款人证件照","maxLength":255},"payerIdPicture2":{"type":"string","description":"付款人证件照_2","maxLength":255},"paymentCompanyName":{"type":"string","required":true,"description":"支付公司","maxLength":100},"paymentCompanyCode":{"type":"string","description":"支付公司编码","maxLength":50},"paymentOrderNo":{"type":"string","required":true,"description":"支付流水编号","maxLength":100},"paymentTime":{"type":"string","required":true,"description":"支付时间","format":"date-time"},"paymentAmount":{"type":"number","required":true,"description":"支付金额","minimum":0.0},"paymentCurrency":{"type":"string","description":"支付货币, ISO标准，例如CNY, 默认CNY","default":"CNY"},"senderIdType":{"type":"string","description":"发件人证件类型","maxLength":30},"senderIdNo":{"type":"string","description":"发件人证件号","maxLength":30},"senderIdcardFront":{"type":"string","description":"寄件人身份证号正面URL","maxLength":255},"senderIdcardBack":{"type":"string","description":"寄件人身份证号反面URL","maxLength":255},"senderCountryCode":{"type":"string","description":"发件人国家编号 ISO 2字码"},"senderPrimaryAdministrative":{"type":"string","description":"发件人一级行政区","maxLength":100},"senderSecondAdministrative":{"type":"string","description":"发件人二级行政区","maxLength":100},"senderAddress":{"type":"string","required":true,"description":"发件人地址","maxLength":100},"senderStreetNum":{"type":"string","description":"发件人门牌号","maxLength":100},"senderPostcode":{"type":"string","description":"发件人邮编","maxLength":100},"senderCompanyName":{"type":"string","required":true,"description":"发件人公司","maxLength":100},"senderName":{"type":"string","required":true,"description":"发件人姓名","maxLength":50},"senderPhone":{"type":"string","required":true,"description":"发件人手机号","maxLength":30},"senderEmail":{"type":"string","description":"发件人邮箱","maxLength":100},"recipientIdType":{"type":"string","description":"收件人证件类型","maxLength":100},"recipientIdNo":{"type":"string","description":"收件人证件号","maxLength":100},"recipientCountryCode":{"type":"string","description":"收件人国家编号 ISO 二字码"},"recipientPrimaryAdministrative":{"type":"string","description":"收件人一级行政区","maxLength":100},"recipientSecondAdministrative":{"type":"string","description":"收件人二级行政区","maxLength":100},"recipientThirdAdministrative":{"type":"string","description":"收件人三级行政区","maxLength":100},"recipientAddress":{"type":"string","required":true,"description":"收件人地址","maxLength":100},"recipientStreetNum":{"type":"string","description":"收件人门牌号","maxLength":100},"recipientPostcode":{"type":"string","description":"收件人邮编","maxLength":100},"recipientCompanyName":{"type":"string","description":"收件人公司","maxLength":100},"recipientName":{"type":"string","required":true,"description":"收件人姓名","maxLength":50},"recipientPhone":{"type":"string","required":true,"description":"收件人电话","maxLength":30},"recipientEmail":{"type":"string","description":"收件人邮箱","maxLength":100},"returnPostcode":{"type":"string","description":"退件人邮编","maxLength":100},"returnStreetNum":{"type":"string","description":"退件人门牌号","maxLength":100},"returnAddress":{"type":"string","description":"退件人详细地址","maxLength":100},"returnSecondAdministrative":{"type":"string","description":"退件人二级行政区址","maxLength":100},"returnPrimaryAdministrative":{"type":"string","description":"退件人一级行政区","maxLength":100},"returnCountryCode":{"type":"string","description":"退件人国家编号"},"returnEmail":{"type":"string","description":"退件人邮箱"},"returnPhone":{"type":"string","description":"退件人电话","maxLength":30},"returnName":{"type":"string","description":"退件人名称","maxLength":30},"returnCompanyName":{"type":"string","description":"退件人企业名称","maxLength":100},"returnType":{"type":"string","description":"退件类型：back_to_owner 退给寄件人，back_to_other 退给其他人，destroy_local 原地销毁"},"buyerEcAccount":{"type":"string","description":"购买人在电商的账号","maxLength":30},"buyerFullName":{"type":"string","description":"购买人全名","maxLength":30},"buyerPhone":{"type":"string","description":"购买人电话","maxLength":30},"buyerIdType":{"type":"string","description":"购买人证件类型","maxLength":30},"buyerIdNo":{"type":"string","description":"购买人证件号码","maxLength":30},"buyerIdPicture":{"type":"string","description":"购买人证件照片","maxLength":255},"buyerIdPicture2":{"type":"string","description":"购买人证件照片2","maxLength":255},"predictPutTime":{"type":"string","description":"预计入库时间 预估什么时候送到物流商仓库的时间","format":"date-time"},"needSignature":{"type":"integer","description":"是否需要人签收，0不需要，1需要。默认不需要"},"dimensionUnit":{"type":"string","description":"尺寸单位：cm,m,默认cm","default":"cm"},"ebcName":{"type":"string","description":"电商企业的登记名称，对应清单的收发货人","maxLength":50},"ebcCode":{"type":"string","description":"电商企业在海关注册登记编号或统一社会信用代码，对应清单的收发货人","maxLength":50},"ebpName":{"type":"string","description":"电商平台的登记名称","maxLength":50},"ebpCode":{"type":"string","description":"电商平台在海关注册登记编号或统一社会信用代码","maxLength":50},"isDangerous":{"type":"boolean","description":"是否危险品","default":"false"},"vendors":{"type":"any","description":"非必须拓展字段"},"items":{"type":"array","required":true,"description":"商品列表","items":{"type":"object","required":["unitPrice","grossWeight","netWeight","quantity","hsCode","origin","specification","currency","itemNo","productUnit","productName","url"],"properties":{"itemNo":{"type":"string","required":true,"description":"货物编号","maxLength":100},"hsCode":{"type":"string","required":true,"description":"海关识别码","maxLength":100},"barCode":{"type":"string","description":"条形码","maxLength":100},"brand":{"type":"string","description":"品牌","maxLength":100},"productName":{"type":"string","required":true,"description":"货物名称","maxLength":100},"nativeProductName":{"type":"string","description":"本地化货物名称","maxLength":100},"productDescription":{"type":"string","description":"货物描述","maxLength":100},"productUnit":{"type":"string","required":true,"description":"货物单位","maxLength":100},"url":{"type":"string","required":true,"description":"商品url","maxLength":2000},"origin":{"type":"string","required":true,"description":"原产地","maxLength":100},"specification":{"type":"string","required":true,"description":"规格","maxLength":255},"grossWeight":{"type":"number","required":true,"description":"毛重","minimum":0.0},"netWeight":{"type":"number","required":true,"description":"净重","minimum":0.0},"unitPrice":{"type":"number","required":true,"description":"单价","minimum":0.0},"currency":{"type":"string","required":true,"description":"币种, ISO标准，例如CNY"},"quantity":{"type":"integer","required":true,"description":"数量","minimum":0.0}}},"minItems":1},"parcelNo":{"type":"string","description":"包裹编号"},"accountNo":{"type":"string","description":"所属账户编号"},"billOfLadingNo":{"type":"string","description":"提单号"},"freightCharge":{"type":"number","description":"包裹运费"},"freightChargeCurrency":{"type":"string","description":"包裹运费币种"},"status":{"type":"integer","description":"包裹状态"},"billStatus":{"type":"string","description":"扣费状态"},"trackingNo":{"type":"string","description":"国际快递编号"},"serviceCompleteTime":{"type":"string","description":"包裹服务完成时间(包裹收件时间)","format":"date-time"}}},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#getLabel":{"post":{"tags":[],"summary":"getLabel","description":"电商获取面单信息，如没有面单返回正在生成中，请稍后重试，有面单则返回面单信息","consumes":["application/json"],"parameters":[{"name":"getLabel","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为getLabel","default":"getLabel"},"params":{"type":"object","required":["parcelNo"],"properties":{"parcelNo":{"type":"object","required":["type","value"],"description":"包裹请求参数: 包裹编号、包裹编号类型","properties":{"value":{"type":"string","required":true,"description":"编号，类型由type决定","maxLength":36},"type":{"type":"string","required":true,"description":"编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号","enum":["PARCEL_NO","ORDER_NO","TRACKING_NO"]}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"object","properties":{"trackingNo":{"type":"string","description":"包裹的国际快递单号"},"parcelNo":{"type":"string","description":"面单对应的包裹单号"},"orderNo":{"type":"string","description":"电商订单号"},"isReady":{"type":"boolean","description":"面单是否已经生成: true已经生成、false尚未生成"},"labelType":{"type":"string","description":"面单打印纸张类型: 1 特殊纸张(10*15厘米）、2 A4纸张(21*29.7厘米)、3 国内面单(18*10厘米)4 标签纸 (10*10厘米)、5 标签纸(8.05*9厘米)。目前仅支持3 国内面单(18*10厘米)，如有其他需要请与我们联系"},"labelFormat":{"type":"string","description":"生成面单的格式: PDF文件、JPG文件。默认为PDF文件"},"labelContent":{"type":"string","description":"生成面单文件的Base64的编码"}}},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#getTracking":{"post":{"tags":[],"summary":"getTracking","description":"getTracking","consumes":["application/json"],"parameters":[{"name":"getTracking","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为getTracking","default":"getTracking"},"params":{"type":"object","required":["parcelNo"],"properties":{"parcelNo":{"type":"object","required":["type","value"],"description":"包裹编号","properties":{"value":{"type":"string","required":true,"description":"编号，类型由type决定","maxLength":36},"type":{"type":"string","required":true,"description":"编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号","enum":["PARCEL_NO","ORDER_NO","TRACKING_NO"]}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"object","required":["parcelNo","orderNo","trackingNo","events"],"properties":{"trackingNo":{"type":"string","required":true,"description":"国际物流单号"},"orderNo":{"type":"string","required":true,"description":"电商订单编号"},"parcelNo":{"type":"string","required":true,"description":"包裹编号"},"events":{"type":"array","required":true,"description":"事件列表","items":{"type":"object","required":["code","createTime","time","message"],"properties":{"createTime":{"type":"string","required":true,"description":"记录时间","format":"date-time"},"time":{"type":"string","required":true,"description":"事件发生时间","format":"date-time"},"location":{"type":"string","description":"事件发生地点"},"message":{"type":"string","required":true,"description":"事件描述文字"},"remark":{"type":"string","description":"事件备注信息"},"code":{"type":"string","required":true,"description":"事件代码","enum":["UNKNOWN","COLLECT","SHIPPED","TAKEOFF","LANDING","HANDOVER","CLEARANCE_START","CLEARANCE_END","DELIVERING","SINGED"]}}}}}},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#fixException":{"post":{"tags":[],"summary":"fixException","description":"电商修复异常包裹","consumes":["application/json"],"parameters":[{"name":"fixException","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为fixException","default":"fixException"},"params":{"type":"object","required":["parcelNo","fixParcelInfoParam"],"properties":{"parcelNo":{"type":"object","required":["type","value"],"description":"包裹编号","properties":{"value":{"type":"string","required":true,"description":"编号，类型由type决定","maxLength":36},"type":{"type":"string","required":true,"description":"编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号","enum":["PARCEL_NO","ORDER_NO","TRACKING_NO"]}}},"fixParcelInfoParam":{"type":"object","required":["routeCode","senderAddress","recipientPhone","payerIdNo","payerPhone","paymentAmount","senderPhone","paymentCompanyName","grossWeight","netWeight","senderName","itemAmount","payerLegalName","payerIdType","recipientName","paymentTime","recipientAddress","paymentOrderNo","items","tradeCountry","onlineOrderNo","senderCompanyName"],"description":"包裹修复信息","properties":{"routeCode":{"type":"string","required":true,"description":"链路识别码","maxLength":36},"routeNo":{"type":"string","description":"链路编号","maxLength":36},"onlineOrderNo":{"type":"string","required":true,"description":"线上订单号","maxLength":100},"facility":{"type":"string","description":"发货人站点代码","maxLength":100},"lot":{"type":"string","description":"批次号","maxLength":100},"type":{"type":"integer","description":"包裹类型: [0 普通包裹;]","default":"0"},"skuNumber":{"type":"integer","description":"包裹里面的sku种类数量","minimum":0.0},"volume":{"type":"number","description":"体积","minimum":0.0},"grossWeight":{"type":"number","required":true,"description":"毛重","minimum":0.0},"netWeight":{"type":"number","required":true,"description":"净重","minimum":0.0},"weightUnit":{"type":"string","description":"重量单位 公斤kg default kg optional","default":"kg"},"insuranceFee":{"type":"number","description":"保险费 optional 默认是0","minimum":0.0,"default":"0.0"},"discount":{"type":"number","description":"包裹折扣 默认是0","minimum":0.0,"default":"0.0"},"totalTax":{"type":"number","description":"包裹税费 默认是0","minimum":0.0,"default":"0.0"},"freight":{"type":"number","description":"运杂费 默认是0","minimum":0.0,"default":"0.0"},"itemAmount":{"type":"number","required":true,"description":"包裹总金额","minimum":0.0},"tradeCountry":{"type":"string","required":true,"description":"包裹贸易国, 使用ISO二字码，例如CN"},"payerLegalName":{"type":"string","required":true,"description":"付款人法定姓名","maxLength":50},"payerIdType":{"type":"string","required":true,"description":"付款人证件类型","maxLength":30},"payerIdNo":{"type":"string","required":true,"description":"付款人证件号","maxLength":30},"payerPhone":{"type":"string","required":true,"description":"付款人手机号","maxLength":30},"payerIdPicture":{"type":"string","description":"付款人证件照","maxLength":255},"payerIdPicture2":{"type":"string","description":"付款人证件照_2","maxLength":255},"paymentCompanyName":{"type":"string","required":true,"description":"支付公司","maxLength":100},"paymentCompanyCode":{"type":"string","description":"支付公司编码","maxLength":50},"paymentOrderNo":{"type":"string","required":true,"description":"支付流水编号","maxLength":100},"paymentTime":{"type":"string","required":true,"description":"支付时间","format":"date-time"},"paymentAmount":{"type":"number","required":true,"description":"支付金额","minimum":0.0},"paymentCurrency":{"type":"string","description":"支付货币, ISO标准，例如CNY, 默认CNY","default":"CNY"},"senderIdType":{"type":"string","description":"发件人证件类型","maxLength":30},"senderIdNo":{"type":"string","description":"发件人证件号","maxLength":30},"senderIdcardFront":{"type":"string","description":"寄件人身份证号正面URL","maxLength":255},"senderIdcardBack":{"type":"string","description":"寄件人身份证号反面URL","maxLength":255},"senderCountryCode":{"type":"string","description":"发件人国家编号 ISO 2字码"},"senderPrimaryAdministrative":{"type":"string","description":"发件人一级行政区","maxLength":100},"senderSecondAdministrative":{"type":"string","description":"发件人二级行政区","maxLength":100},"senderAddress":{"type":"string","required":true,"description":"发件人地址","maxLength":100},"senderStreetNum":{"type":"string","description":"发件人门牌号","maxLength":100},"senderPostcode":{"type":"string","description":"发件人邮编","maxLength":100},"senderCompanyName":{"type":"string","required":true,"description":"发件人公司","maxLength":100},"senderName":{"type":"string","required":true,"description":"发件人姓名","maxLength":50},"senderPhone":{"type":"string","required":true,"description":"发件人手机号","maxLength":30},"senderEmail":{"type":"string","description":"发件人邮箱","maxLength":100},"recipientIdType":{"type":"string","description":"收件人证件类型","maxLength":100},"recipientIdNo":{"type":"string","description":"收件人证件号","maxLength":100},"recipientCountryCode":{"type":"string","description":"收件人国家编号 ISO 二字码"},"recipientPrimaryAdministrative":{"type":"string","description":"收件人一级行政区","maxLength":100},"recipientSecondAdministrative":{"type":"string","description":"收件人二级行政区","maxLength":100},"recipientThirdAdministrative":{"type":"string","description":"收件人三级行政区","maxLength":100},"recipientAddress":{"type":"string","required":true,"description":"收件人地址","maxLength":100},"recipientStreetNum":{"type":"string","description":"收件人门牌号","maxLength":100},"recipientPostcode":{"type":"string","description":"收件人邮编","maxLength":100},"recipientCompanyName":{"type":"string","description":"收件人公司","maxLength":100},"recipientName":{"type":"string","required":true,"description":"收件人姓名","maxLength":50},"recipientPhone":{"type":"string","required":true,"description":"收件人电话","maxLength":30},"recipientEmail":{"type":"string","description":"收件人邮箱","maxLength":100},"returnPostcode":{"type":"string","description":"退件人邮编","maxLength":100},"returnStreetNum":{"type":"string","description":"退件人门牌号","maxLength":100},"returnAddress":{"type":"string","description":"退件人详细地址","maxLength":100},"returnSecondAdministrative":{"type":"string","description":"退件人二级行政区址","maxLength":100},"returnPrimaryAdministrative":{"type":"string","description":"退件人一级行政区","maxLength":100},"returnCountryCode":{"type":"string","description":"退件人国家编号"},"returnEmail":{"type":"string","description":"退件人邮箱"},"returnPhone":{"type":"string","description":"退件人电话","maxLength":30},"returnName":{"type":"string","description":"退件人名称","maxLength":30},"returnCompanyName":{"type":"string","description":"退件人企业名称","maxLength":100},"returnType":{"type":"string","description":"退件类型：back_to_owner 退给寄件人，back_to_other 退给其他人，destroy_local 原地销毁"},"buyerEcAccount":{"type":"string","description":"购买人在电商的账号","maxLength":30},"buyerFullName":{"type":"string","description":"购买人全名","maxLength":30},"buyerPhone":{"type":"string","description":"购买人电话","maxLength":30},"buyerIdType":{"type":"string","description":"购买人证件类型","maxLength":30},"buyerIdNo":{"type":"string","description":"购买人证件号码","maxLength":30},"buyerIdPicture":{"type":"string","description":"购买人证件照片","maxLength":255},"buyerIdPicture2":{"type":"string","description":"购买人证件照片2","maxLength":255},"predictPutTime":{"type":"string","description":"预计入库时间 预估什么时候送到物流商仓库的时间","format":"date-time"},"needSignature":{"type":"integer","description":"是否需要人签收，0不需要，1需要。默认不需要"},"dimensionUnit":{"type":"string","description":"尺寸单位：cm,m,默认cm","default":"cm"},"ebcName":{"type":"string","description":"电商企业的登记名称，对应清单的收发货人","maxLength":50},"ebcCode":{"type":"string","description":"电商企业在海关注册登记编号或统一社会信用代码，对应清单的收发货人","maxLength":50},"ebpName":{"type":"string","description":"电商平台的登记名称","maxLength":50},"ebpCode":{"type":"string","description":"电商平台在海关注册登记编号或统一社会信用代码","maxLength":50},"isDangerous":{"type":"boolean","description":"是否危险品","default":"false"},"vendors":{"type":"any","description":"非必须拓展字段"},"items":{"type":"array","required":true,"description":"商品列表","items":{"type":"object","required":["unitPrice","grossWeight","netWeight","quantity","hsCode","origin","specification","currency","itemNo","productUnit","productName","url"],"properties":{"itemNo":{"type":"string","required":true,"description":"货物编号","maxLength":100},"hsCode":{"type":"string","required":true,"description":"海关识别码","maxLength":100},"barCode":{"type":"string","description":"条形码","maxLength":100},"brand":{"type":"string","description":"品牌","maxLength":100},"productName":{"type":"string","required":true,"description":"货物名称","maxLength":100},"nativeProductName":{"type":"string","description":"本地化货物名称","maxLength":100},"productDescription":{"type":"string","description":"货物描述","maxLength":100},"productUnit":{"type":"string","required":true,"description":"货物单位","maxLength":100},"url":{"type":"string","required":true,"description":"商品url","maxLength":2000},"origin":{"type":"string","required":true,"description":"原产地","maxLength":100},"specification":{"type":"string","required":true,"description":"规格","maxLength":255},"grossWeight":{"type":"number","required":true,"description":"毛重","minimum":0.0},"netWeight":{"type":"number","required":true,"description":"净重","minimum":0.0},"unitPrice":{"type":"number","required":true,"description":"单价","minimum":0.0},"currency":{"type":"string","required":true,"description":"币种, ISO标准，例如CNY"},"quantity":{"type":"integer","required":true,"description":"数量","minimum":0.0}}},"minItems":1}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"null","required":true},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}},"/openapi/v1/ecommerce/jsonrpc#confirmServiceComplete":{"post":{"tags":[],"summary":"confirmServiceComplete","description":"电商确认服务完成","consumes":["application/json"],"parameters":[{"name":"confirmServiceComplete","in":"body","required":true,"schema":{"type":"object","required":["method","id","jsonrpc","params"],"properties":{"id":{"type":"string","required":true,"description":"请求id，建议使用uuid"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"method":{"type":"string","required":true,"description":"调用方法名 此处必须为confirmServiceComplete","default":"confirmServiceComplete"},"params":{"type":"object","required":["parcelNo"],"properties":{"parcelNo":{"type":"object","required":["type","value"],"description":"包裹编号","properties":{"value":{"type":"string","required":true,"description":"编号，类型由type决定","maxLength":36},"type":{"type":"string","required":true,"description":"编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号","enum":["PARCEL_NO","ORDER_NO","TRACKING_NO"]}}}}}}}}],"responses":{"200":{"description":"response","schema":{"type":"object","required":["id","jsonrpc"],"properties":{"id":{"type":"string","required":true,"description":"请求id"},"jsonrpc":{"type":"string","required":true,"description":"JSONRPC 协议规定，此处必须为2.0","default":"2.0"},"result":{"type":"null","required":true},"error":{"type":"object","required":["code","message"],"description":"RPC出错信息，error和result同时只能出现一个","properties":{"code":{"type":"integer","required":true,"description":"错误代码，详情请查看附录错误代码表"},"message":{"type":"string","required":true,"description":"错误描述"},"data":{"type":"any","description":"错误数据"}}}}}}}}}}}
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "电商OpenApi",
+    "version": null,
+    "description": "电商可以通过OpenApi下单，获取包裹详情，获取面单，获取物流轨迹，修复异常包裹。\n\n## 认证\n\n使用APIKEY + HMAC256签名的认证方式， 生成验证字符串，并放在`Authorization` HEADER中，具体格式为:\n\nAuthorization:GPX-HMAC256 APIKEY={apikey},TIMESTAMP={timestamp},NONCE={nonce},SIGN={sign}\n\n\n|名称           | 描述                           |\n|--------------|--------------------------------|\n|`GPX-HMAC256` | 为固定值，注意后面要跟一个空格' ' |\n|`APIKEY`      | 为ParcelX分配的APIKEY，可在登录后台获取|\n|`TIMESTAMP`   | 为UNIX时间戳，注意这里是毫秒数      |\n|`NONCE`       | 为4～8位的随机数字                 |\n|`SIGN`        | 为HMAC256(utf8_bytes(`APIKEY` + `TIMESTAMP` + `NONCE` + `HTTP_BODY`)), HMAC256的SecretKey为 `APIKEY` 对应的 `API_SECRET`|\n\n其中 `API_SECRET` 为 `APIKEY` 对应的密钥，可以登录后台查看；`HTTP_BODY` 为HTTP请求中的Body内容字符串"
+  },
+  "basePath": "/",
+  "tags": [],
+  "schemas": ["http", "https"],
+  "paths": {
+    "/openapi/v1/ecommerce/jsonrpc#createParcel": {
+      "post": {
+        "tags": [],
+        "summary": "createParcel",
+        "description": "创建包裹",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "createParcel",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为createParcel",
+                "default": "createParcel"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcel", "autoPlaceOrder"],
+                "properties": {
+                  "parcel": {
+                    "type": "object",
+                    "required": ["routeCode", "senderAddress", "recipientPhone", "payerIdNo", "payerPhone", "paymentAmount", "senderPhone", "paymentCompanyName", "grossWeight", "netWeight", "senderName", "itemAmount", "payerLegalName", "payerIdType", "recipientName", "paymentTime", "recipientAddress", "paymentOrderNo", "items", "tradeCountry", "onlineOrderNo", "senderCompanyName"],
+                    "description": "包裹信息",
+                    "properties": {
+                      "routeCode": {
+                        "type": "string",
+                        "required": true,
+                        "description": "链路识别码",
+                        "maxLength": 36
+                      },
+                      "routeNo": {
+                        "type": "string",
+                        "description": "链路编号",
+                        "maxLength": 36
+                      },
+                      "onlineOrderNo": {
+                        "type": "string",
+                        "required": true,
+                        "description": "线上订单号",
+                        "maxLength": 100
+                      },
+                      "facility": {
+                        "type": "string",
+                        "description": "发货人站点代码",
+                        "maxLength": 100
+                      },
+                      "lot": {
+                        "type": "string",
+                        "description": "批次号",
+                        "maxLength": 100
+                      },
+                      "type": {
+                        "type": "integer",
+                        "description": "包裹类型: [0 普通包裹;]",
+                        "default": "0"
+                      },
+                      "skuNumber": {
+                        "type": "integer",
+                        "description": "包裹里面的sku种类数量",
+                        "minimum": 0.0
+                      },
+                      "volume": {
+                        "type": "number",
+                        "description": "体积",
+                        "minimum": 0.0
+                      },
+                      "grossWeight": {
+                        "type": "number",
+                        "required": true,
+                        "description": "毛重",
+                        "minimum": 0.0
+                      },
+                      "netWeight": {
+                        "type": "number",
+                        "required": true,
+                        "description": "净重",
+                        "minimum": 0.0
+                      },
+                      "weightUnit": {
+                        "type": "string",
+                        "description": "重量单位 公斤kg default kg optional",
+                        "default": "kg"
+                      },
+                      "insuranceFee": {
+                        "type": "number",
+                        "description": "保险费 optional 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "discount": {
+                        "type": "number",
+                        "description": "包裹折扣 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "totalTax": {
+                        "type": "number",
+                        "description": "包裹税费 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "freight": {
+                        "type": "number",
+                        "description": "运杂费 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "itemAmount": {
+                        "type": "number",
+                        "required": true,
+                        "description": "包裹总金额",
+                        "minimum": 0.0
+                      },
+                      "tradeCountry": {
+                        "type": "string",
+                        "required": true,
+                        "description": "包裹贸易国, 使用ISO二字码，例如CN"
+                      },
+                      "payerLegalName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人法定姓名",
+                        "maxLength": 50
+                      },
+                      "payerIdType": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人证件类型",
+                        "maxLength": 30
+                      },
+                      "payerIdNo": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人证件号",
+                        "maxLength": 30
+                      },
+                      "payerPhone": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人手机号",
+                        "maxLength": 30
+                      },
+                      "payerIdPicture": {
+                        "type": "string",
+                        "description": "付款人证件照",
+                        "maxLength": 255
+                      },
+                      "payerIdPicture2": {
+                        "type": "string",
+                        "description": "付款人证件照_2",
+                        "maxLength": 255
+                      },
+                      "paymentCompanyName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "支付公司",
+                        "maxLength": 100
+                      },
+                      "paymentCompanyCode": {
+                        "type": "string",
+                        "description": "支付公司编码",
+                        "maxLength": 50
+                      },
+                      "paymentOrderNo": {
+                        "type": "string",
+                        "required": true,
+                        "description": "支付流水编号",
+                        "maxLength": 100
+                      },
+                      "paymentTime": {
+                        "type": "string",
+                        "required": true,
+                        "description": "支付时间",
+                        "format": "date-time"
+                      },
+                      "paymentAmount": {
+                        "type": "number",
+                        "required": true,
+                        "description": "支付金额",
+                        "minimum": 0.0
+                      },
+                      "paymentCurrency": {
+                        "type": "string",
+                        "description": "支付货币, ISO标准，例如CNY, 默认CNY",
+                        "default": "CNY"
+                      },
+                      "senderIdType": {
+                        "type": "string",
+                        "description": "发件人证件类型",
+                        "maxLength": 30
+                      },
+                      "senderIdNo": {
+                        "type": "string",
+                        "description": "发件人证件号",
+                        "maxLength": 30
+                      },
+                      "senderIdcardFront": {
+                        "type": "string",
+                        "description": "寄件人身份证号正面URL",
+                        "maxLength": 255
+                      },
+                      "senderIdcardBack": {
+                        "type": "string",
+                        "description": "寄件人身份证号反面URL",
+                        "maxLength": 255
+                      },
+                      "senderCountryCode": {
+                        "type": "string",
+                        "description": "发件人国家编号 ISO 2字码"
+                      },
+                      "senderPrimaryAdministrative": {
+                        "type": "string",
+                        "description": "发件人一级行政区",
+                        "maxLength": 100
+                      },
+                      "senderSecondAdministrative": {
+                        "type": "string",
+                        "description": "发件人二级行政区",
+                        "maxLength": 100
+                      },
+                      "senderAddress": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人地址",
+                        "maxLength": 100
+                      },
+                      "senderStreetNum": {
+                        "type": "string",
+                        "description": "发件人门牌号",
+                        "maxLength": 100
+                      },
+                      "senderPostcode": {
+                        "type": "string",
+                        "description": "发件人邮编",
+                        "maxLength": 100
+                      },
+                      "senderCompanyName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人公司",
+                        "maxLength": 100
+                      },
+                      "senderName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人姓名",
+                        "maxLength": 50
+                      },
+                      "senderPhone": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人手机号",
+                        "maxLength": 30
+                      },
+                      "senderEmail": {
+                        "type": "string",
+                        "description": "发件人邮箱",
+                        "maxLength": 100
+                      },
+                      "recipientIdType": {
+                        "type": "string",
+                        "description": "收件人证件类型",
+                        "maxLength": 100
+                      },
+                      "recipientIdNo": {
+                        "type": "string",
+                        "description": "收件人证件号",
+                        "maxLength": 100
+                      },
+                      "recipientCountryCode": {
+                        "type": "string",
+                        "description": "收件人国家编号 ISO 二字码"
+                      },
+                      "recipientPrimaryAdministrative": {
+                        "type": "string",
+                        "description": "收件人一级行政区",
+                        "maxLength": 100
+                      },
+                      "recipientSecondAdministrative": {
+                        "type": "string",
+                        "description": "收件人二级行政区",
+                        "maxLength": 100
+                      },
+                      "recipientThirdAdministrative": {
+                        "type": "string",
+                        "description": "收件人三级行政区",
+                        "maxLength": 100
+                      },
+                      "recipientAddress": {
+                        "type": "string",
+                        "required": true,
+                        "description": "收件人地址",
+                        "maxLength": 100
+                      },
+                      "recipientStreetNum": {
+                        "type": "string",
+                        "description": "收件人门牌号",
+                        "maxLength": 100
+                      },
+                      "recipientPostcode": {
+                        "type": "string",
+                        "description": "收件人邮编",
+                        "maxLength": 100
+                      },
+                      "recipientCompanyName": {
+                        "type": "string",
+                        "description": "收件人公司",
+                        "maxLength": 100
+                      },
+                      "recipientName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "收件人姓名",
+                        "maxLength": 50
+                      },
+                      "recipientPhone": {
+                        "type": "string",
+                        "required": true,
+                        "description": "收件人电话",
+                        "maxLength": 30
+                      },
+                      "recipientEmail": {
+                        "type": "string",
+                        "description": "收件人邮箱",
+                        "maxLength": 100
+                      },
+                      "returnPostcode": {
+                        "type": "string",
+                        "description": "退件人邮编",
+                        "maxLength": 100
+                      },
+                      "returnStreetNum": {
+                        "type": "string",
+                        "description": "退件人门牌号",
+                        "maxLength": 100
+                      },
+                      "returnAddress": {
+                        "type": "string",
+                        "description": "退件人详细地址",
+                        "maxLength": 100
+                      },
+                      "returnSecondAdministrative": {
+                        "type": "string",
+                        "description": "退件人二级行政区址",
+                        "maxLength": 100
+                      },
+                      "returnPrimaryAdministrative": {
+                        "type": "string",
+                        "description": "退件人一级行政区",
+                        "maxLength": 100
+                      },
+                      "returnCountryCode": {
+                        "type": "string",
+                        "description": "退件人国家编号"
+                      },
+                      "returnEmail": {
+                        "type": "string",
+                        "description": "退件人邮箱"
+                      },
+                      "returnPhone": {
+                        "type": "string",
+                        "description": "退件人电话",
+                        "maxLength": 30
+                      },
+                      "returnName": {
+                        "type": "string",
+                        "description": "退件人名称",
+                        "maxLength": 30
+                      },
+                      "returnCompanyName": {
+                        "type": "string",
+                        "description": "退件人企业名称",
+                        "maxLength": 100
+                      },
+                      "returnType": {
+                        "type": "string",
+                        "description": "退件类型：back_to_owner 退给寄件人，back_to_other 退给其他人，destroy_local 原地销毁"
+                      },
+                      "buyerEcAccount": {
+                        "type": "string",
+                        "description": "购买人在电商的账号",
+                        "maxLength": 30
+                      },
+                      "buyerFullName": {
+                        "type": "string",
+                        "description": "购买人全名",
+                        "maxLength": 30
+                      },
+                      "buyerPhone": {
+                        "type": "string",
+                        "description": "购买人电话",
+                        "maxLength": 30
+                      },
+                      "buyerIdType": {
+                        "type": "string",
+                        "description": "购买人证件类型",
+                        "maxLength": 30
+                      },
+                      "buyerIdNo": {
+                        "type": "string",
+                        "description": "购买人证件号码",
+                        "maxLength": 30
+                      },
+                      "buyerIdPicture": {
+                        "type": "string",
+                        "description": "购买人证件照片",
+                        "maxLength": 255
+                      },
+                      "buyerIdPicture2": {
+                        "type": "string",
+                        "description": "购买人证件照片2",
+                        "maxLength": 255
+                      },
+                      "predictPutTime": {
+                        "type": "string",
+                        "description": "预计入库时间 预估什么时候送到物流商仓库的时间",
+                        "format": "date-time"
+                      },
+                      "needSignature": {
+                        "type": "integer",
+                        "description": "是否需要人签收，0不需要，1需要。默认不需要"
+                      },
+                      "dimensionUnit": {
+                        "type": "string",
+                        "description": "尺寸单位：cm,m,默认cm",
+                        "default": "cm"
+                      },
+                      "ebcName": {
+                        "type": "string",
+                        "description": "电商企业的登记名称，对应清单的收发货人",
+                        "maxLength": 50
+                      },
+                      "ebcCode": {
+                        "type": "string",
+                        "description": "电商企业在海关注册登记编号或统一社会信用代码，对应清单的收发货人",
+                        "maxLength": 50
+                      },
+                      "ebpName": {
+                        "type": "string",
+                        "description": "电商平台的登记名称",
+                        "maxLength": 50
+                      },
+                      "ebpCode": {
+                        "type": "string",
+                        "description": "电商平台在海关注册登记编号或统一社会信用代码",
+                        "maxLength": 50
+                      },
+                      "isDangerous": {
+                        "type": "boolean",
+                        "description": "是否危险品",
+                        "default": "false"
+                      },
+                      "vendors": {
+                        "type": "any",
+                        "description": "非必须拓展字段"
+                      },
+                      "items": {
+                        "type": "array",
+                        "required": true,
+                        "description": "商品列表",
+                        "items": {
+                          "type": "object",
+                          "required": ["unitPrice", "grossWeight", "netWeight", "quantity", "hsCode", "origin", "specification", "currency", "itemNo", "productUnit", "productName", "url"],
+                          "properties": {
+                            "itemNo": {
+                              "type": "string",
+                              "required": true,
+                              "description": "货物编号",
+                              "maxLength": 100
+                            },
+                            "hsCode": {
+                              "type": "string",
+                              "required": true,
+                              "description": "海关识别码",
+                              "maxLength": 100
+                            },
+                            "barCode": {
+                              "type": "string",
+                              "description": "条形码",
+                              "maxLength": 100
+                            },
+                            "brand": {
+                              "type": "string",
+                              "description": "品牌",
+                              "maxLength": 100
+                            },
+                            "productName": {
+                              "type": "string",
+                              "required": true,
+                              "description": "货物名称",
+                              "maxLength": 100
+                            },
+                            "nativeProductName": {
+                              "type": "string",
+                              "description": "本地化货物名称",
+                              "maxLength": 100
+                            },
+                            "productDescription": {
+                              "type": "string",
+                              "description": "货物描述",
+                              "maxLength": 100
+                            },
+                            "productUnit": {
+                              "type": "string",
+                              "required": true,
+                              "description": "货物单位",
+                              "maxLength": 100
+                            },
+                            "url": {
+                              "type": "string",
+                              "required": true,
+                              "description": "商品url",
+                              "maxLength": 2000
+                            },
+                            "origin": {
+                              "type": "string",
+                              "required": true,
+                              "description": "原产地",
+                              "maxLength": 100
+                            },
+                            "specification": {
+                              "type": "string",
+                              "required": true,
+                              "description": "规格",
+                              "maxLength": 255
+                            },
+                            "grossWeight": {
+                              "type": "number",
+                              "required": true,
+                              "description": "毛重",
+                              "minimum": 0.0
+                            },
+                            "netWeight": {
+                              "type": "number",
+                              "required": true,
+                              "description": "净重",
+                              "minimum": 0.0
+                            },
+                            "unitPrice": {
+                              "type": "number",
+                              "required": true,
+                              "description": "单价",
+                              "minimum": 0.0
+                            },
+                            "currency": {
+                              "type": "string",
+                              "required": true,
+                              "description": "币种, ISO标准，例如CNY"
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "required": true,
+                              "description": "数量",
+                              "minimum": 0.0
+                            }
+                          }
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "autoPlaceOrder": {
+                    "type": "boolean",
+                    "required": true,
+                    "description": "是否自动下单，默认为true"
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "parcelNo": {
+                      "type": "string"
+                    },
+                    "onlineOrderNo": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#placeOrder": {
+      "post": {
+        "tags": [],
+        "summary": "placeOrder",
+        "description": "电商确认包裹上传",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "placeOrder",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为placeOrder",
+                "default": "placeOrder"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcelNo"],
+                "properties": {
+                  "parcelNo": {
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "description": "包裹编号",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号，类型由type决定",
+                        "maxLength": 36
+                      },
+                      "type": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号",
+                        "enum": ["PARCEL_NO", "ORDER_NO", "TRACKING_NO"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "null",
+                  "required": true
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#getParcelList": {
+      "post": {
+        "tags": [],
+        "summary": "getParcelList",
+        "description": "查询包裹单号",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "getParcelList",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为getParcelList",
+                "default": "getParcelList"
+              },
+              "params": {
+                "type": "object",
+                "required": ["query"],
+                "properties": {
+                  "query": {
+                    "type": "object",
+                    "required": ["criteria"],
+                    "description": "包裹查询参数",
+                    "properties": {
+                      "criteria": {
+                        "type": "string",
+                        "required": true,
+                        "description": "包裹查询条件, CREATED 查询已创建状态的包裹, COMMITTED 查询已经提交状态的包裹, PROCESSING 查询正在处理中的包裹, MISSING_LABEL 查询还没有面单数据的包裹, MISSING_TRACKING_NUMBER 查询还没有物流单号的包裹, EXCEPTION 查询异常的包裹, SERVICE_COMPLETE 查询服务完成的包裹, CONFIRM_COMPLETE 查询已经被电商确认服务完成的包裹, FAILED 查询所有失败的包裹",
+                        "enum": ["CREATED", "COMMITTED", "PROCESSING", "MISSING_LABEL", "MISSING_TRACKING_NUMBER", "EXCEPTION", "SERVICE_COMPLETE", "CONFIRM_COMPLETE", "FAILED"]
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "description": "开始时间，为null表示没有开始时间限制",
+                        "format": "date-time"
+                      },
+                      "endTime": {
+                        "type": "string",
+                        "description": "结束时间，为null表示没有结束时间限制",
+                        "format": "date-time"
+                      },
+                      "pageSize": {
+                        "type": "integer",
+                        "description": "一页返回多少记录",
+                        "maximum": 500.0,
+                        "minimum": 0.0,
+                        "default": "20"
+                      },
+                      "pageNum": {
+                        "type": "integer",
+                        "description": "当前页面索引，从0开始",
+                        "minimum": 0.0,
+                        "default": "0"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "总共有多少记录"
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "一页返回多少记录"
+                    },
+                    "pageNum": {
+                      "type": "integer",
+                      "description": "当前页面索引，从0开始"
+                    },
+                    "list": {
+                      "type": "array",
+                      "description": "包裹相关单号列表",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "parcelNumber": {
+                            "type": "string",
+                            "description": "包裹单号"
+                          },
+                          "trackingNumber": {
+                            "type": "string",
+                            "description": "物流单号"
+                          },
+                          "orderNumber": {
+                            "type": "string",
+                            "description": "电商单号"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#getParcelInfo": {
+      "post": {
+        "tags": [],
+        "summary": "getParcelInfo",
+        "description": "查询包裹信息",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "getParcelInfo",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为getParcelInfo",
+                "default": "getParcelInfo"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcelNo"],
+                "properties": {
+                  "parcelNo": {
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "description": "包裹编号",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号，类型由type决定",
+                        "maxLength": 36
+                      },
+                      "type": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号",
+                        "enum": ["PARCEL_NO", "ORDER_NO", "TRACKING_NO"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "object",
+                  "required": ["routeCode", "senderAddress", "recipientPhone", "payerIdNo", "payerPhone", "paymentAmount", "senderPhone", "paymentCompanyName", "grossWeight", "netWeight", "senderName", "itemAmount", "payerLegalName", "payerIdType", "recipientName", "paymentTime", "recipientAddress", "paymentOrderNo", "items", "tradeCountry", "onlineOrderNo", "senderCompanyName"],
+                  "properties": {
+                    "routeCode": {
+                      "type": "string",
+                      "required": true,
+                      "description": "链路识别码",
+                      "maxLength": 36
+                    },
+                    "routeNo": {
+                      "type": "string",
+                      "description": "链路编号",
+                      "maxLength": 36
+                    },
+                    "onlineOrderNo": {
+                      "type": "string",
+                      "required": true,
+                      "description": "线上订单号",
+                      "maxLength": 100
+                    },
+                    "facility": {
+                      "type": "string",
+                      "description": "发货人站点代码",
+                      "maxLength": 100
+                    },
+                    "lot": {
+                      "type": "string",
+                      "description": "批次号",
+                      "maxLength": 100
+                    },
+                    "type": {
+                      "type": "integer",
+                      "description": "包裹类型: [0 普通包裹;]",
+                      "default": "0"
+                    },
+                    "skuNumber": {
+                      "type": "integer",
+                      "description": "包裹里面的sku种类数量",
+                      "minimum": 0.0
+                    },
+                    "volume": {
+                      "type": "number",
+                      "description": "体积",
+                      "minimum": 0.0
+                    },
+                    "grossWeight": {
+                      "type": "number",
+                      "required": true,
+                      "description": "毛重",
+                      "minimum": 0.0
+                    },
+                    "netWeight": {
+                      "type": "number",
+                      "required": true,
+                      "description": "净重",
+                      "minimum": 0.0
+                    },
+                    "weightUnit": {
+                      "type": "string",
+                      "description": "重量单位 公斤kg default kg optional",
+                      "default": "kg"
+                    },
+                    "insuranceFee": {
+                      "type": "number",
+                      "description": "保险费 optional 默认是0",
+                      "minimum": 0.0,
+                      "default": "0.0"
+                    },
+                    "discount": {
+                      "type": "number",
+                      "description": "包裹折扣 默认是0",
+                      "minimum": 0.0,
+                      "default": "0.0"
+                    },
+                    "totalTax": {
+                      "type": "number",
+                      "description": "包裹税费 默认是0",
+                      "minimum": 0.0,
+                      "default": "0.0"
+                    },
+                    "freight": {
+                      "type": "number",
+                      "description": "运杂费 默认是0",
+                      "minimum": 0.0,
+                      "default": "0.0"
+                    },
+                    "itemAmount": {
+                      "type": "number",
+                      "required": true,
+                      "description": "包裹总金额",
+                      "minimum": 0.0
+                    },
+                    "tradeCountry": {
+                      "type": "string",
+                      "required": true,
+                      "description": "包裹贸易国, 使用ISO二字码，例如CN"
+                    },
+                    "payerLegalName": {
+                      "type": "string",
+                      "required": true,
+                      "description": "付款人法定姓名",
+                      "maxLength": 50
+                    },
+                    "payerIdType": {
+                      "type": "string",
+                      "required": true,
+                      "description": "付款人证件类型",
+                      "maxLength": 30
+                    },
+                    "payerIdNo": {
+                      "type": "string",
+                      "required": true,
+                      "description": "付款人证件号",
+                      "maxLength": 30
+                    },
+                    "payerPhone": {
+                      "type": "string",
+                      "required": true,
+                      "description": "付款人手机号",
+                      "maxLength": 30
+                    },
+                    "payerIdPicture": {
+                      "type": "string",
+                      "description": "付款人证件照",
+                      "maxLength": 255
+                    },
+                    "payerIdPicture2": {
+                      "type": "string",
+                      "description": "付款人证件照_2",
+                      "maxLength": 255
+                    },
+                    "paymentCompanyName": {
+                      "type": "string",
+                      "required": true,
+                      "description": "支付公司",
+                      "maxLength": 100
+                    },
+                    "paymentCompanyCode": {
+                      "type": "string",
+                      "description": "支付公司编码",
+                      "maxLength": 50
+                    },
+                    "paymentOrderNo": {
+                      "type": "string",
+                      "required": true,
+                      "description": "支付流水编号",
+                      "maxLength": 100
+                    },
+                    "paymentTime": {
+                      "type": "string",
+                      "required": true,
+                      "description": "支付时间",
+                      "format": "date-time"
+                    },
+                    "paymentAmount": {
+                      "type": "number",
+                      "required": true,
+                      "description": "支付金额",
+                      "minimum": 0.0
+                    },
+                    "paymentCurrency": {
+                      "type": "string",
+                      "description": "支付货币, ISO标准，例如CNY, 默认CNY",
+                      "default": "CNY"
+                    },
+                    "senderIdType": {
+                      "type": "string",
+                      "description": "发件人证件类型",
+                      "maxLength": 30
+                    },
+                    "senderIdNo": {
+                      "type": "string",
+                      "description": "发件人证件号",
+                      "maxLength": 30
+                    },
+                    "senderIdcardFront": {
+                      "type": "string",
+                      "description": "寄件人身份证号正面URL",
+                      "maxLength": 255
+                    },
+                    "senderIdcardBack": {
+                      "type": "string",
+                      "description": "寄件人身份证号反面URL",
+                      "maxLength": 255
+                    },
+                    "senderCountryCode": {
+                      "type": "string",
+                      "description": "发件人国家编号 ISO 2字码"
+                    },
+                    "senderPrimaryAdministrative": {
+                      "type": "string",
+                      "description": "发件人一级行政区",
+                      "maxLength": 100
+                    },
+                    "senderSecondAdministrative": {
+                      "type": "string",
+                      "description": "发件人二级行政区",
+                      "maxLength": 100
+                    },
+                    "senderAddress": {
+                      "type": "string",
+                      "required": true,
+                      "description": "发件人地址",
+                      "maxLength": 100
+                    },
+                    "senderStreetNum": {
+                      "type": "string",
+                      "description": "发件人门牌号",
+                      "maxLength": 100
+                    },
+                    "senderPostcode": {
+                      "type": "string",
+                      "description": "发件人邮编",
+                      "maxLength": 100
+                    },
+                    "senderCompanyName": {
+                      "type": "string",
+                      "required": true,
+                      "description": "发件人公司",
+                      "maxLength": 100
+                    },
+                    "senderName": {
+                      "type": "string",
+                      "required": true,
+                      "description": "发件人姓名",
+                      "maxLength": 50
+                    },
+                    "senderPhone": {
+                      "type": "string",
+                      "required": true,
+                      "description": "发件人手机号",
+                      "maxLength": 30
+                    },
+                    "senderEmail": {
+                      "type": "string",
+                      "description": "发件人邮箱",
+                      "maxLength": 100
+                    },
+                    "recipientIdType": {
+                      "type": "string",
+                      "description": "收件人证件类型",
+                      "maxLength": 100
+                    },
+                    "recipientIdNo": {
+                      "type": "string",
+                      "description": "收件人证件号",
+                      "maxLength": 100
+                    },
+                    "recipientCountryCode": {
+                      "type": "string",
+                      "description": "收件人国家编号 ISO 二字码"
+                    },
+                    "recipientPrimaryAdministrative": {
+                      "type": "string",
+                      "description": "收件人一级行政区",
+                      "maxLength": 100
+                    },
+                    "recipientSecondAdministrative": {
+                      "type": "string",
+                      "description": "收件人二级行政区",
+                      "maxLength": 100
+                    },
+                    "recipientThirdAdministrative": {
+                      "type": "string",
+                      "description": "收件人三级行政区",
+                      "maxLength": 100
+                    },
+                    "recipientAddress": {
+                      "type": "string",
+                      "required": true,
+                      "description": "收件人地址",
+                      "maxLength": 100
+                    },
+                    "recipientStreetNum": {
+                      "type": "string",
+                      "description": "收件人门牌号",
+                      "maxLength": 100
+                    },
+                    "recipientPostcode": {
+                      "type": "string",
+                      "description": "收件人邮编",
+                      "maxLength": 100
+                    },
+                    "recipientCompanyName": {
+                      "type": "string",
+                      "description": "收件人公司",
+                      "maxLength": 100
+                    },
+                    "recipientName": {
+                      "type": "string",
+                      "required": true,
+                      "description": "收件人姓名",
+                      "maxLength": 50
+                    },
+                    "recipientPhone": {
+                      "type": "string",
+                      "required": true,
+                      "description": "收件人电话",
+                      "maxLength": 30
+                    },
+                    "recipientEmail": {
+                      "type": "string",
+                      "description": "收件人邮箱",
+                      "maxLength": 100
+                    },
+                    "returnPostcode": {
+                      "type": "string",
+                      "description": "退件人邮编",
+                      "maxLength": 100
+                    },
+                    "returnStreetNum": {
+                      "type": "string",
+                      "description": "退件人门牌号",
+                      "maxLength": 100
+                    },
+                    "returnAddress": {
+                      "type": "string",
+                      "description": "退件人详细地址",
+                      "maxLength": 100
+                    },
+                    "returnSecondAdministrative": {
+                      "type": "string",
+                      "description": "退件人二级行政区址",
+                      "maxLength": 100
+                    },
+                    "returnPrimaryAdministrative": {
+                      "type": "string",
+                      "description": "退件人一级行政区",
+                      "maxLength": 100
+                    },
+                    "returnCountryCode": {
+                      "type": "string",
+                      "description": "退件人国家编号"
+                    },
+                    "returnEmail": {
+                      "type": "string",
+                      "description": "退件人邮箱"
+                    },
+                    "returnPhone": {
+                      "type": "string",
+                      "description": "退件人电话",
+                      "maxLength": 30
+                    },
+                    "returnName": {
+                      "type": "string",
+                      "description": "退件人名称",
+                      "maxLength": 30
+                    },
+                    "returnCompanyName": {
+                      "type": "string",
+                      "description": "退件人企业名称",
+                      "maxLength": 100
+                    },
+                    "returnType": {
+                      "type": "string",
+                      "description": "退件类型：back_to_owner 退给寄件人，back_to_other 退给其他人，destroy_local 原地销毁"
+                    },
+                    "buyerEcAccount": {
+                      "type": "string",
+                      "description": "购买人在电商的账号",
+                      "maxLength": 30
+                    },
+                    "buyerFullName": {
+                      "type": "string",
+                      "description": "购买人全名",
+                      "maxLength": 30
+                    },
+                    "buyerPhone": {
+                      "type": "string",
+                      "description": "购买人电话",
+                      "maxLength": 30
+                    },
+                    "buyerIdType": {
+                      "type": "string",
+                      "description": "购买人证件类型",
+                      "maxLength": 30
+                    },
+                    "buyerIdNo": {
+                      "type": "string",
+                      "description": "购买人证件号码",
+                      "maxLength": 30
+                    },
+                    "buyerIdPicture": {
+                      "type": "string",
+                      "description": "购买人证件照片",
+                      "maxLength": 255
+                    },
+                    "buyerIdPicture2": {
+                      "type": "string",
+                      "description": "购买人证件照片2",
+                      "maxLength": 255
+                    },
+                    "predictPutTime": {
+                      "type": "string",
+                      "description": "预计入库时间 预估什么时候送到物流商仓库的时间",
+                      "format": "date-time"
+                    },
+                    "needSignature": {
+                      "type": "integer",
+                      "description": "是否需要人签收，0不需要，1需要。默认不需要"
+                    },
+                    "dimensionUnit": {
+                      "type": "string",
+                      "description": "尺寸单位：cm,m,默认cm",
+                      "default": "cm"
+                    },
+                    "ebcName": {
+                      "type": "string",
+                      "description": "电商企业的登记名称，对应清单的收发货人",
+                      "maxLength": 50
+                    },
+                    "ebcCode": {
+                      "type": "string",
+                      "description": "电商企业在海关注册登记编号或统一社会信用代码，对应清单的收发货人",
+                      "maxLength": 50
+                    },
+                    "ebpName": {
+                      "type": "string",
+                      "description": "电商平台的登记名称",
+                      "maxLength": 50
+                    },
+                    "ebpCode": {
+                      "type": "string",
+                      "description": "电商平台在海关注册登记编号或统一社会信用代码",
+                      "maxLength": 50
+                    },
+                    "isDangerous": {
+                      "type": "boolean",
+                      "description": "是否危险品",
+                      "default": "false"
+                    },
+                    "vendors": {
+                      "type": "any",
+                      "description": "非必须拓展字段"
+                    },
+                    "items": {
+                      "type": "array",
+                      "required": true,
+                      "description": "商品列表",
+                      "items": {
+                        "type": "object",
+                        "required": ["unitPrice", "grossWeight", "netWeight", "quantity", "hsCode", "origin", "specification", "currency", "itemNo", "productUnit", "productName", "url"],
+                        "properties": {
+                          "itemNo": {
+                            "type": "string",
+                            "required": true,
+                            "description": "货物编号",
+                            "maxLength": 100
+                          },
+                          "hsCode": {
+                            "type": "string",
+                            "required": true,
+                            "description": "海关识别码",
+                            "maxLength": 100
+                          },
+                          "barCode": {
+                            "type": "string",
+                            "description": "条形码",
+                            "maxLength": 100
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "品牌",
+                            "maxLength": 100
+                          },
+                          "productName": {
+                            "type": "string",
+                            "required": true,
+                            "description": "货物名称",
+                            "maxLength": 100
+                          },
+                          "nativeProductName": {
+                            "type": "string",
+                            "description": "本地化货物名称",
+                            "maxLength": 100
+                          },
+                          "productDescription": {
+                            "type": "string",
+                            "description": "货物描述",
+                            "maxLength": 100
+                          },
+                          "productUnit": {
+                            "type": "string",
+                            "required": true,
+                            "description": "货物单位",
+                            "maxLength": 100
+                          },
+                          "url": {
+                            "type": "string",
+                            "required": true,
+                            "description": "商品url",
+                            "maxLength": 2000
+                          },
+                          "origin": {
+                            "type": "string",
+                            "required": true,
+                            "description": "原产地",
+                            "maxLength": 100
+                          },
+                          "specification": {
+                            "type": "string",
+                            "required": true,
+                            "description": "规格",
+                            "maxLength": 255
+                          },
+                          "grossWeight": {
+                            "type": "number",
+                            "required": true,
+                            "description": "毛重",
+                            "minimum": 0.0
+                          },
+                          "netWeight": {
+                            "type": "number",
+                            "required": true,
+                            "description": "净重",
+                            "minimum": 0.0
+                          },
+                          "unitPrice": {
+                            "type": "number",
+                            "required": true,
+                            "description": "单价",
+                            "minimum": 0.0
+                          },
+                          "currency": {
+                            "type": "string",
+                            "required": true,
+                            "description": "币种, ISO标准，例如CNY"
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "required": true,
+                            "description": "数量",
+                            "minimum": 0.0
+                          }
+                        }
+                      },
+                      "minItems": 1
+                    },
+                    "parcelNo": {
+                      "type": "string",
+                      "description": "包裹编号"
+                    },
+                    "accountNo": {
+                      "type": "string",
+                      "description": "所属账户编号"
+                    },
+                    "billOfLadingNo": {
+                      "type": "string",
+                      "description": "提单号"
+                    },
+                    "freightCharge": {
+                      "type": "number",
+                      "description": "包裹运费"
+                    },
+                    "freightChargeCurrency": {
+                      "type": "string",
+                      "description": "包裹运费币种"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "description": "包裹状态"
+                    },
+                    "billStatus": {
+                      "type": "string",
+                      "description": "扣费状态"
+                    },
+                    "trackingNo": {
+                      "type": "string",
+                      "description": "国际快递编号"
+                    },
+                    "serviceCompleteTime": {
+                      "type": "string",
+                      "description": "包裹服务完成时间(包裹收件时间)",
+                      "format": "date-time"
+                    }
+                  }
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#getLabel": {
+      "post": {
+        "tags": [],
+        "summary": "getLabel",
+        "description": "电商获取面单信息，如没有面单返回正在生成中，请稍后重试，有面单则返回面单信息",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "getLabel",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为getLabel",
+                "default": "getLabel"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcelNo"],
+                "properties": {
+                  "parcelNo": {
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "description": "包裹请求参数: 包裹编号、包裹编号类型",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号，类型由type决定",
+                        "maxLength": 36
+                      },
+                      "type": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号",
+                        "enum": ["PARCEL_NO", "ORDER_NO", "TRACKING_NO"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "trackingNo": {
+                      "type": "string",
+                      "description": "包裹的国际快递单号"
+                    },
+                    "parcelNo": {
+                      "type": "string",
+                      "description": "面单对应的包裹单号"
+                    },
+                    "orderNo": {
+                      "type": "string",
+                      "description": "电商订单号"
+                    },
+                    "isReady": {
+                      "type": "boolean",
+                      "description": "面单是否已经生成: true已经生成、false尚未生成"
+                    },
+                    "labelType": {
+                      "type": "string",
+                      "description": "面单打印纸张类型: 1 特殊纸张(10*15厘米）、2 A4纸张(21*29.7厘米)、3 国内面单(18*10厘米)4 标签纸 (10*10厘米)、5 标签纸(8.05*9厘米)。目前仅支持3 国内面单(18*10厘米)，如有其他需要请与我们联系"
+                    },
+                    "labelFormat": {
+                      "type": "string",
+                      "description": "生成面单的格式: PDF文件、JPG文件。默认为PDF文件"
+                    },
+                    "labelContent": {
+                      "type": "string",
+                      "description": "生成面单文件的Base64的编码"
+                    }
+                  }
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#getTracking": {
+      "post": {
+        "tags": [],
+        "summary": "getTracking",
+        "description": "getTracking",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "getTracking",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为getTracking",
+                "default": "getTracking"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcelNo"],
+                "properties": {
+                  "parcelNo": {
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "description": "包裹编号",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号，类型由type决定",
+                        "maxLength": 36
+                      },
+                      "type": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号",
+                        "enum": ["PARCEL_NO", "ORDER_NO", "TRACKING_NO"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "object",
+                  "required": ["parcelNo", "orderNo", "trackingNo", "events"],
+                  "properties": {
+                    "trackingNo": {
+                      "type": "string",
+                      "required": true,
+                      "description": "国际物流单号"
+                    },
+                    "orderNo": {
+                      "type": "string",
+                      "required": true,
+                      "description": "电商订单编号"
+                    },
+                    "parcelNo": {
+                      "type": "string",
+                      "required": true,
+                      "description": "包裹编号"
+                    },
+                    "events": {
+                      "type": "array",
+                      "required": true,
+                      "description": "事件列表",
+                      "items": {
+                        "type": "object",
+                        "required": ["code", "createTime", "time", "message"],
+                        "properties": {
+                          "createTime": {
+                            "type": "string",
+                            "required": true,
+                            "description": "记录时间",
+                            "format": "date-time"
+                          },
+                          "time": {
+                            "type": "string",
+                            "required": true,
+                            "description": "事件发生时间",
+                            "format": "date-time"
+                          },
+                          "location": {
+                            "type": "string",
+                            "description": "事件发生地点"
+                          },
+                          "message": {
+                            "type": "string",
+                            "required": true,
+                            "description": "事件描述文字"
+                          },
+                          "remark": {
+                            "type": "string",
+                            "description": "事件备注信息"
+                          },
+                          "code": {
+                            "type": "string",
+                            "required": true,
+                            "description": "事件代码",
+                            "enum": ["UNKNOWN", "COLLECT", "SHIPPED", "TAKEOFF", "LANDING", "HANDOVER", "CLEARANCE_START", "CLEARANCE_END", "DELIVERING", "SINGED"]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#fixException": {
+      "post": {
+        "tags": [],
+        "summary": "fixException",
+        "description": "电商修复异常包裹",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "fixException",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为fixException",
+                "default": "fixException"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcelNo", "fixParcelInfoParam"],
+                "properties": {
+                  "parcelNo": {
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "description": "包裹编号",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号，类型由type决定",
+                        "maxLength": 36
+                      },
+                      "type": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号",
+                        "enum": ["PARCEL_NO", "ORDER_NO", "TRACKING_NO"]
+                      }
+                    }
+                  },
+                  "fixParcelInfoParam": {
+                    "type": "object",
+                    "required": ["routeCode", "senderAddress", "recipientPhone", "payerIdNo", "payerPhone", "paymentAmount", "senderPhone", "paymentCompanyName", "grossWeight", "netWeight", "senderName", "itemAmount", "payerLegalName", "payerIdType", "recipientName", "paymentTime", "recipientAddress", "paymentOrderNo", "items", "tradeCountry", "onlineOrderNo", "senderCompanyName"],
+                    "description": "包裹修复信息",
+                    "properties": {
+                      "routeCode": {
+                        "type": "string",
+                        "required": true,
+                        "description": "链路识别码",
+                        "maxLength": 36
+                      },
+                      "routeNo": {
+                        "type": "string",
+                        "description": "链路编号",
+                        "maxLength": 36
+                      },
+                      "onlineOrderNo": {
+                        "type": "string",
+                        "required": true,
+                        "description": "线上订单号",
+                        "maxLength": 100
+                      },
+                      "facility": {
+                        "type": "string",
+                        "description": "发货人站点代码",
+                        "maxLength": 100
+                      },
+                      "lot": {
+                        "type": "string",
+                        "description": "批次号",
+                        "maxLength": 100
+                      },
+                      "type": {
+                        "type": "integer",
+                        "description": "包裹类型: [0 普通包裹;]",
+                        "default": "0"
+                      },
+                      "skuNumber": {
+                        "type": "integer",
+                        "description": "包裹里面的sku种类数量",
+                        "minimum": 0.0
+                      },
+                      "volume": {
+                        "type": "number",
+                        "description": "体积",
+                        "minimum": 0.0
+                      },
+                      "grossWeight": {
+                        "type": "number",
+                        "required": true,
+                        "description": "毛重",
+                        "minimum": 0.0
+                      },
+                      "netWeight": {
+                        "type": "number",
+                        "required": true,
+                        "description": "净重",
+                        "minimum": 0.0
+                      },
+                      "weightUnit": {
+                        "type": "string",
+                        "description": "重量单位 公斤kg default kg optional",
+                        "default": "kg"
+                      },
+                      "insuranceFee": {
+                        "type": "number",
+                        "description": "保险费 optional 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "discount": {
+                        "type": "number",
+                        "description": "包裹折扣 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "totalTax": {
+                        "type": "number",
+                        "description": "包裹税费 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "freight": {
+                        "type": "number",
+                        "description": "运杂费 默认是0",
+                        "minimum": 0.0,
+                        "default": "0.0"
+                      },
+                      "itemAmount": {
+                        "type": "number",
+                        "required": true,
+                        "description": "包裹总金额",
+                        "minimum": 0.0
+                      },
+                      "tradeCountry": {
+                        "type": "string",
+                        "required": true,
+                        "description": "包裹贸易国, 使用ISO二字码，例如CN"
+                      },
+                      "payerLegalName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人法定姓名",
+                        "maxLength": 50
+                      },
+                      "payerIdType": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人证件类型",
+                        "maxLength": 30
+                      },
+                      "payerIdNo": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人证件号",
+                        "maxLength": 30
+                      },
+                      "payerPhone": {
+                        "type": "string",
+                        "required": true,
+                        "description": "付款人手机号",
+                        "maxLength": 30
+                      },
+                      "payerIdPicture": {
+                        "type": "string",
+                        "description": "付款人证件照",
+                        "maxLength": 255
+                      },
+                      "payerIdPicture2": {
+                        "type": "string",
+                        "description": "付款人证件照_2",
+                        "maxLength": 255
+                      },
+                      "paymentCompanyName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "支付公司",
+                        "maxLength": 100
+                      },
+                      "paymentCompanyCode": {
+                        "type": "string",
+                        "description": "支付公司编码",
+                        "maxLength": 50
+                      },
+                      "paymentOrderNo": {
+                        "type": "string",
+                        "required": true,
+                        "description": "支付流水编号",
+                        "maxLength": 100
+                      },
+                      "paymentTime": {
+                        "type": "string",
+                        "required": true,
+                        "description": "支付时间",
+                        "format": "date-time"
+                      },
+                      "paymentAmount": {
+                        "type": "number",
+                        "required": true,
+                        "description": "支付金额",
+                        "minimum": 0.0
+                      },
+                      "paymentCurrency": {
+                        "type": "string",
+                        "description": "支付货币, ISO标准，例如CNY, 默认CNY",
+                        "default": "CNY"
+                      },
+                      "senderIdType": {
+                        "type": "string",
+                        "description": "发件人证件类型",
+                        "maxLength": 30
+                      },
+                      "senderIdNo": {
+                        "type": "string",
+                        "description": "发件人证件号",
+                        "maxLength": 30
+                      },
+                      "senderIdcardFront": {
+                        "type": "string",
+                        "description": "寄件人身份证号正面URL",
+                        "maxLength": 255
+                      },
+                      "senderIdcardBack": {
+                        "type": "string",
+                        "description": "寄件人身份证号反面URL",
+                        "maxLength": 255
+                      },
+                      "senderCountryCode": {
+                        "type": "string",
+                        "description": "发件人国家编号 ISO 2字码"
+                      },
+                      "senderPrimaryAdministrative": {
+                        "type": "string",
+                        "description": "发件人一级行政区",
+                        "maxLength": 100
+                      },
+                      "senderSecondAdministrative": {
+                        "type": "string",
+                        "description": "发件人二级行政区",
+                        "maxLength": 100
+                      },
+                      "senderAddress": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人地址",
+                        "maxLength": 100
+                      },
+                      "senderStreetNum": {
+                        "type": "string",
+                        "description": "发件人门牌号",
+                        "maxLength": 100
+                      },
+                      "senderPostcode": {
+                        "type": "string",
+                        "description": "发件人邮编",
+                        "maxLength": 100
+                      },
+                      "senderCompanyName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人公司",
+                        "maxLength": 100
+                      },
+                      "senderName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人姓名",
+                        "maxLength": 50
+                      },
+                      "senderPhone": {
+                        "type": "string",
+                        "required": true,
+                        "description": "发件人手机号",
+                        "maxLength": 30
+                      },
+                      "senderEmail": {
+                        "type": "string",
+                        "description": "发件人邮箱",
+                        "maxLength": 100
+                      },
+                      "recipientIdType": {
+                        "type": "string",
+                        "description": "收件人证件类型",
+                        "maxLength": 100
+                      },
+                      "recipientIdNo": {
+                        "type": "string",
+                        "description": "收件人证件号",
+                        "maxLength": 100
+                      },
+                      "recipientCountryCode": {
+                        "type": "string",
+                        "description": "收件人国家编号 ISO 二字码"
+                      },
+                      "recipientPrimaryAdministrative": {
+                        "type": "string",
+                        "description": "收件人一级行政区",
+                        "maxLength": 100
+                      },
+                      "recipientSecondAdministrative": {
+                        "type": "string",
+                        "description": "收件人二级行政区",
+                        "maxLength": 100
+                      },
+                      "recipientThirdAdministrative": {
+                        "type": "string",
+                        "description": "收件人三级行政区",
+                        "maxLength": 100
+                      },
+                      "recipientAddress": {
+                        "type": "string",
+                        "required": true,
+                        "description": "收件人地址",
+                        "maxLength": 100
+                      },
+                      "recipientStreetNum": {
+                        "type": "string",
+                        "description": "收件人门牌号",
+                        "maxLength": 100
+                      },
+                      "recipientPostcode": {
+                        "type": "string",
+                        "description": "收件人邮编",
+                        "maxLength": 100
+                      },
+                      "recipientCompanyName": {
+                        "type": "string",
+                        "description": "收件人公司",
+                        "maxLength": 100
+                      },
+                      "recipientName": {
+                        "type": "string",
+                        "required": true,
+                        "description": "收件人姓名",
+                        "maxLength": 50
+                      },
+                      "recipientPhone": {
+                        "type": "string",
+                        "required": true,
+                        "description": "收件人电话",
+                        "maxLength": 30
+                      },
+                      "recipientEmail": {
+                        "type": "string",
+                        "description": "收件人邮箱",
+                        "maxLength": 100
+                      },
+                      "returnPostcode": {
+                        "type": "string",
+                        "description": "退件人邮编",
+                        "maxLength": 100
+                      },
+                      "returnStreetNum": {
+                        "type": "string",
+                        "description": "退件人门牌号",
+                        "maxLength": 100
+                      },
+                      "returnAddress": {
+                        "type": "string",
+                        "description": "退件人详细地址",
+                        "maxLength": 100
+                      },
+                      "returnSecondAdministrative": {
+                        "type": "string",
+                        "description": "退件人二级行政区址",
+                        "maxLength": 100
+                      },
+                      "returnPrimaryAdministrative": {
+                        "type": "string",
+                        "description": "退件人一级行政区",
+                        "maxLength": 100
+                      },
+                      "returnCountryCode": {
+                        "type": "string",
+                        "description": "退件人国家编号"
+                      },
+                      "returnEmail": {
+                        "type": "string",
+                        "description": "退件人邮箱"
+                      },
+                      "returnPhone": {
+                        "type": "string",
+                        "description": "退件人电话",
+                        "maxLength": 30
+                      },
+                      "returnName": {
+                        "type": "string",
+                        "description": "退件人名称",
+                        "maxLength": 30
+                      },
+                      "returnCompanyName": {
+                        "type": "string",
+                        "description": "退件人企业名称",
+                        "maxLength": 100
+                      },
+                      "returnType": {
+                        "type": "string",
+                        "description": "退件类型：back_to_owner 退给寄件人，back_to_other 退给其他人，destroy_local 原地销毁"
+                      },
+                      "buyerEcAccount": {
+                        "type": "string",
+                        "description": "购买人在电商的账号",
+                        "maxLength": 30
+                      },
+                      "buyerFullName": {
+                        "type": "string",
+                        "description": "购买人全名",
+                        "maxLength": 30
+                      },
+                      "buyerPhone": {
+                        "type": "string",
+                        "description": "购买人电话",
+                        "maxLength": 30
+                      },
+                      "buyerIdType": {
+                        "type": "string",
+                        "description": "购买人证件类型",
+                        "maxLength": 30
+                      },
+                      "buyerIdNo": {
+                        "type": "string",
+                        "description": "购买人证件号码",
+                        "maxLength": 30
+                      },
+                      "buyerIdPicture": {
+                        "type": "string",
+                        "description": "购买人证件照片",
+                        "maxLength": 255
+                      },
+                      "buyerIdPicture2": {
+                        "type": "string",
+                        "description": "购买人证件照片2",
+                        "maxLength": 255
+                      },
+                      "predictPutTime": {
+                        "type": "string",
+                        "description": "预计入库时间 预估什么时候送到物流商仓库的时间",
+                        "format": "date-time"
+                      },
+                      "needSignature": {
+                        "type": "integer",
+                        "description": "是否需要人签收，0不需要，1需要。默认不需要"
+                      },
+                      "dimensionUnit": {
+                        "type": "string",
+                        "description": "尺寸单位：cm,m,默认cm",
+                        "default": "cm"
+                      },
+                      "ebcName": {
+                        "type": "string",
+                        "description": "电商企业的登记名称，对应清单的收发货人",
+                        "maxLength": 50
+                      },
+                      "ebcCode": {
+                        "type": "string",
+                        "description": "电商企业在海关注册登记编号或统一社会信用代码，对应清单的收发货人",
+                        "maxLength": 50
+                      },
+                      "ebpName": {
+                        "type": "string",
+                        "description": "电商平台的登记名称",
+                        "maxLength": 50
+                      },
+                      "ebpCode": {
+                        "type": "string",
+                        "description": "电商平台在海关注册登记编号或统一社会信用代码",
+                        "maxLength": 50
+                      },
+                      "isDangerous": {
+                        "type": "boolean",
+                        "description": "是否危险品",
+                        "default": "false"
+                      },
+                      "vendors": {
+                        "type": "any",
+                        "description": "非必须拓展字段"
+                      },
+                      "items": {
+                        "type": "array",
+                        "required": true,
+                        "description": "商品列表",
+                        "items": {
+                          "type": "object",
+                          "required": ["unitPrice", "grossWeight", "netWeight", "quantity", "hsCode", "origin", "specification", "currency", "itemNo", "productUnit", "productName", "url"],
+                          "properties": {
+                            "itemNo": {
+                              "type": "string",
+                              "required": true,
+                              "description": "货物编号",
+                              "maxLength": 100
+                            },
+                            "hsCode": {
+                              "type": "string",
+                              "required": true,
+                              "description": "海关识别码",
+                              "maxLength": 100
+                            },
+                            "barCode": {
+                              "type": "string",
+                              "description": "条形码",
+                              "maxLength": 100
+                            },
+                            "brand": {
+                              "type": "string",
+                              "description": "品牌",
+                              "maxLength": 100
+                            },
+                            "productName": {
+                              "type": "string",
+                              "required": true,
+                              "description": "货物名称",
+                              "maxLength": 100
+                            },
+                            "nativeProductName": {
+                              "type": "string",
+                              "description": "本地化货物名称",
+                              "maxLength": 100
+                            },
+                            "productDescription": {
+                              "type": "string",
+                              "description": "货物描述",
+                              "maxLength": 100
+                            },
+                            "productUnit": {
+                              "type": "string",
+                              "required": true,
+                              "description": "货物单位",
+                              "maxLength": 100
+                            },
+                            "url": {
+                              "type": "string",
+                              "required": true,
+                              "description": "商品url",
+                              "maxLength": 2000
+                            },
+                            "origin": {
+                              "type": "string",
+                              "required": true,
+                              "description": "原产地",
+                              "maxLength": 100
+                            },
+                            "specification": {
+                              "type": "string",
+                              "required": true,
+                              "description": "规格",
+                              "maxLength": 255
+                            },
+                            "grossWeight": {
+                              "type": "number",
+                              "required": true,
+                              "description": "毛重",
+                              "minimum": 0.0
+                            },
+                            "netWeight": {
+                              "type": "number",
+                              "required": true,
+                              "description": "净重",
+                              "minimum": 0.0
+                            },
+                            "unitPrice": {
+                              "type": "number",
+                              "required": true,
+                              "description": "单价",
+                              "minimum": 0.0
+                            },
+                            "currency": {
+                              "type": "string",
+                              "required": true,
+                              "description": "币种, ISO标准，例如CNY"
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "required": true,
+                              "description": "数量",
+                              "minimum": 0.0
+                            }
+                          }
+                        },
+                        "minItems": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "null",
+                  "required": true
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1/ecommerce/jsonrpc#confirmServiceComplete": {
+      "post": {
+        "tags": [],
+        "summary": "confirmServiceComplete",
+        "description": "电商确认服务完成",
+        "consumes": ["application/json"],
+        "parameters": [{
+          "name": "confirmServiceComplete",
+          "in": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "required": ["method", "id", "jsonrpc", "params"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "required": true,
+                "description": "请求id，建议使用uuid"
+              },
+              "jsonrpc": {
+                "type": "string",
+                "required": true,
+                "description": "JSONRPC 协议规定，此处必须为2.0",
+                "default": "2.0"
+              },
+              "method": {
+                "type": "string",
+                "required": true,
+                "description": "调用方法名 此处必须为confirmServiceComplete",
+                "default": "confirmServiceComplete"
+              },
+              "params": {
+                "type": "object",
+                "required": ["parcelNo"],
+                "properties": {
+                  "parcelNo": {
+                    "type": "object",
+                    "required": ["type", "value"],
+                    "description": "包裹编号",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号，类型由type决定",
+                        "maxLength": 36
+                      },
+                      "type": {
+                        "type": "string",
+                        "required": true,
+                        "description": "编号类型, PARCEL_NO 包裹编号, ORDER_NO 电商订单编号, TRACKING_NO 物流面单编号",
+                        "enum": ["PARCEL_NO", "ORDER_NO", "TRACKING_NO"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "response",
+            "schema": {
+              "type": "object",
+              "required": ["id", "jsonrpc"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "required": true,
+                  "description": "请求id"
+                },
+                "jsonrpc": {
+                  "type": "string",
+                  "required": true,
+                  "description": "JSONRPC 协议规定，此处必须为2.0",
+                  "default": "2.0"
+                },
+                "result": {
+                  "type": "null",
+                  "required": true
+                },
+                "error": {
+                  "type": "object",
+                  "required": ["code", "message"],
+                  "description": "RPC出错信息，error和result同时只能出现一个",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "required": true,
+                      "description": "错误代码，详情请查看附录错误代码表"
+                    },
+                    "message": {
+                      "type": "string",
+                      "required": true,
+                      "description": "错误描述"
+                    },
+                    "data": {
+                      "type": "any",
+                      "description": "错误数据"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

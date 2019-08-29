@@ -12,7 +12,7 @@
     "https"
   ],
   "paths": {
-    "/openapi/v1/ecommerce/jsonrpc#createParcel": {
+    "/openapi-yto/v1/ecommerce/jsonrpc#createParcel": {
       "post": {
         "tags": [],
         "summary": "createParcel",
@@ -526,17 +526,10 @@
                             "type": "object",
                             "required": [
                               "unitPrice",
-                              "grossWeight",
-                              "netWeight",
                               "quantity",
-                              "hsCode",
-                              "origin",
-                              "specification",
-                              "currency",
                               "itemNo",
-                              "productUnit",
-                              "productName",
-                              "url"
+                              "nativeProductName",
+                              "productName"
                             ],
                             "properties": {
                               "itemNo": {
@@ -547,7 +540,6 @@
                               },
                               "hsCode": {
                                 "type": "string",
-                                "required": true,
                                 "description": "海关识别码",
                                 "maxLength": 100
                               },
@@ -569,6 +561,7 @@
                               },
                               "nativeProductName": {
                                 "type": "string",
+                                "required": true,
                                 "description": "本地化货物名称",
                                 "maxLength": 100
                               },
@@ -579,37 +572,31 @@
                               },
                               "productUnit": {
                                 "type": "string",
-                                "required": true,
                                 "description": "货物单位",
                                 "maxLength": 100
                               },
                               "url": {
                                 "type": "string",
-                                "required": true,
                                 "description": "商品url",
                                 "maxLength": 2000
                               },
                               "origin": {
                                 "type": "string",
-                                "required": true,
                                 "description": "原产地",
                                 "maxLength": 100
                               },
                               "specification": {
                                 "type": "string",
-                                "required": true,
                                 "description": "规格",
                                 "maxLength": 255
                               },
                               "grossWeight": {
                                 "type": "number",
-                                "required": true,
                                 "description": "毛重",
                                 "minimum": 0
                               },
                               "netWeight": {
                                 "type": "number",
-                                "required": true,
                                 "description": "净重",
                                 "minimum": 0
                               },
@@ -621,7 +608,6 @@
                               },
                               "currency": {
                                 "type": "string",
-                                "required": true,
                                 "description": "币种, ISO标准，例如CNY"
                               },
                               "quantity": {
