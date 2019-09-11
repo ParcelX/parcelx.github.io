@@ -3,7 +3,7 @@
   "info": {
     "title": "电商OpenApi",
     "version": null,
-    "description": "电商可以通过OpenApi下单，获取包裹详情，获取面单，获取物流轨迹，修复异常包裹。\n\n## 认证\n\n使用APIKEY + HMAC256签名的认证方式， 生成验证字符串，并放在`Authorization` HEADER中，具体格式为:\n\nAuthorization:GPX-HMAC256 APIKEY={apikey},TIMESTAMP={timestamp},NONCE={nonce},SIGN={sign}\n\n\n|名称           | 描述                           |\n|--------------|--------------------------------|\n|`GPX-HMAC256` | 为固定值，注意后面要跟一个空格' ' |\n|`APIKEY`      | 为ParcelX分配的APIKEY，可在登录后台获取|\n|`TIMESTAMP`   | 为UNIX时间戳，注意这里是毫秒数      |\n|`NONCE`       | 为4～8位的随机数字                 |\n|`SIGN`        | 为HMAC256(utf8_bytes(`APIKEY` + `TIMESTAMP` + `NONCE` + `HTTP_BODY`)), HMAC256的SecretKey为 `APIKEY` 对应的 `API_SECRET`|\n\n其中 `API_SECRET` 为 `APIKEY` 对应的密钥，可以登录后台查看；`HTTP_BODY` 为HTTP请求中的Body内容字符串"
+    "description": "电商可以通过OpenApi下单，获取包裹详情，获取面单，获取物流轨迹，修复异常包裹。\n\n## 认证\n\n使用APIKEY + HMAC256签名的认证方式， 生成验证字符串，并放在`Authorization` HEADER中，具体格式为:\n\nAuthorization:GPX-HMAC256 APIKEY={apikey},TIMESTAMP={timestamp},NONCE={nonce},SIGN={sign}\n\n\n|名称           | 描述                           |\n|--------------|--------------------------------|\n|`GPX-HMAC256` | 为固定值，注意后面要跟一个空格' ' |\n|`APIKEY`      | 为ParcelX分配的APIKEY，可在登录后台获取|\n|`TIMESTAMP`   | 为UNIX时间戳，注意这里是毫秒数      |\n|`NONCE`       | 为4～8位的随机数字                 |\n|`SIGN`        | 为HMAC256(utf8_bytes(`APIKEY` + `TIMESTAMP` + `NONCE` + `HTTP_BODY`)), HMAC256的SecretKey为 `APIKEY` 对应的 `API_SECRET`|\n\n其中 `API_SECRET` 为 `APIKEY` 对应的密钥，可以登录后台查看；`HTTP_BODY` 为HTTP请求中的Body内容字符串 \n\n## 批量调用\n\n创建包裹的批量调用方法请参考`sample-project`中的`onliestore`\n\n点击传送门查看：[Sample-Project](https://github.com/ParcelX/sample-project.git)"
   },
   "basePath": "/",
   "tags": [],
