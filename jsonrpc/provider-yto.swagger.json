@@ -1,0 +1,590 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "服务商OpenAPI",
+        "version": null,
+        "description": "服务商可以调用API完成包裹上传、查询、面单查询、轨迹获取、修复错误等功能\n## 认证\n\n使用APIKEY + HMAC256签名的认证方式， 生成验证字符串，并放在`Authorization` HEADER中，具体格式为:\n\nAuthorization:GPX-HMAC256 APIKEY={apikey},TIMESTAMP={timestamp},NONCE={nonce},SIGN={sign}\n\n\n|名称           | 描述                           |\n|--------------|--------------------------------|\n|`GPX-HMAC256` | 为固定值，注意后面要跟一个空格' ' |\n|`APIKEY`      | 为ParcelX分配的APIKEY，可在登录后台获取|\n|`TIMESTAMP`   | 为UNIX时间戳，注意这里是毫秒数      |\n|`NONCE`       | 为4～8位的随机数字                 |\n|`SIGN`        | 为HMAC256(utf8_bytes(`APIKEY` + `TIMESTAMP` + `NONCE` + `HTTP_BODY`)), HMAC256的SecretKey为 `APIKEY` 对应的 `API_SECRET`|\n\n其中 `API_SECRET` 为 `APIKEY` 对应的密钥，可以登录后台查看；`HTTP_BODY` 为HTTP请求中的Body内容字符串\n\n## 面单格式 \n\n面单格式目前仅支持三种：`PDF`、`JPG`、`JSON`,三种面单内容均以Base64编码存储。\n\nJSON格式面单示例如下：\n```\n{\n  \"parcel_no\":\"PX111122222\" //包裹编号 ,\n  \"order_no\":\"66666666\" //订单编号 ,\n  \"tracking_no\": \"11112222\" //追踪编号 ,\n  \"reference_no\": \"234-11-2234-28\" //相关单号 如：圆通三段码 ,\n  \"provider\": {\n    \"name\": \"圆通\", //服务商名称 \n    \"id\": \"px11223344\" //服务商ID \n  },\n  \"sender\": {\n    \"country\": \"CN\" //发件人国家 ,\n    \"region_l1\": \"江苏省\" //发件人一级行政区 ,\n    \"region_l2\": \"南京市\" //发件人二级行政区 ,\n    \"address\": \"xxx街yyy号2单元1103\" //发件人详细地址 ,\n    \"postcode\": \"200012\" //发件人邮编 ,\n    \"company_name\": \"sender company\" //发件人公司名称 ,\n    \"name\": \"frist last\" //发件人姓名 ,\n    \"phone\": \"13422223333\" //发件人联系电话 ,\n    \"email\": \"xx@abc.com\" //发件人邮箱 \n  },\n  \"recipient\": {\n    \"country\": \"CN\" //收件人国家 ,\n    \"region_l1\": \"江苏省\" //收件人一级行政区 ,\n    \"region_l2\": \"南京市\" //收件人二级行政区 ,\n    \"address\": \"xxx街yyy号2单元1103\" //收件人详细地址 ,\n    \"postcode\": \"200012\" //收件人邮编 ,\n    \"company_name\": \"sender company\" //收件人公司名称 ,\n    \"name\": \"frist last\" //收件人姓名 ,\n    \"phone\": \"13422223333\" //收件人联系电话 ,\n    \"email\": \"xx@abc.com\" //收件人邮箱 \n  }\n}\n```"
+    },
+    "basePath": "/",
+    "tags": [],
+    "schemas": [
+        "http",
+        "https"
+    ],
+    "paths": {
+        "/openapi-yto/v1/provider/jsonrpc#ping": {
+            "post": {
+                "tags": [],
+                "summary": "ping",
+                "description": "ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "ping",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "method",
+                                "id",
+                                "jsonrpc",
+                                "params"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id，建议使用uuid"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "method": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "调用方法名 此处必须为ping",
+                                    "default": "ping"
+                                },
+                                "params": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "jsonrpc"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "result": {
+                                    "type": "string",
+                                    "required": true
+                                },
+                                "error": {
+                                    "type": "object",
+                                    "required": [
+                                        "code",
+                                        "message"
+                                    ],
+                                    "description": "RPC出错信息，error和result同时只能出现一个",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "required": true,
+                                            "description": "错误代码，详情请查看附录错误代码表"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "required": true,
+                                            "description": "错误描述"
+                                        },
+                                        "data": {
+                                            "type": "any",
+                                            "description": "错误数据"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/openapi-yto/v1/provider/jsonrpc#reportTrackingEvent": {
+            "post": {
+                "tags": [],
+                "summary": "reportTrackingEvent",
+                "description": "服务商上报物流轨迹事件，服务商应该按照该API中的物流轨迹事件代码映射轨迹事件，如果找不到对应的映射代码，那么请使用UNKNOWN事件代码",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "reportTrackingEvent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "method",
+                                "id",
+                                "jsonrpc",
+                                "params"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id，建议使用uuid"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "method": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "调用方法名 此处必须为reportTrackingEvent",
+                                    "default": "reportTrackingEvent"
+                                },
+                                "params": {
+                                    "type": "object",
+                                    "required": [
+                                        "parcelNo",
+                                        "trackingEvent"
+                                    ],
+                                    "properties": {
+                                        "parcelNo": {
+                                            "type": "object",
+                                            "description": "包裹编号",
+                                            "properties": {
+                                                "value": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARCEL_NO",
+                                                        "ORDER_NO",
+                                                        "TRACKING_NO"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "trackingEvent": {
+                                            "type": "object",
+                                            "description": "物流轨迹事件信息",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "description": "轨迹代码: \n UNKNOWN 未知, COLLECT 已拣货, SHIPPED 已发货, TAKEOFF 已起运, LANDING 已着陆, HANDOVER 已提货, CR_START 开始清关, CR_END 清关结束, DELIVERING 配送中, SINGED 已签收. \n (如果找不到对应代码，请使用UNKNOWN) ",
+                                                    "enum": [
+                                                        "UNKNOWN",
+                                                        "COLLECT",
+                                                        "SHIPPED",
+                                                        "TAKEOFF",
+                                                        "LANDING",
+                                                        "HANDOVER",
+                                                        "CR_START",
+                                                        "CR_END",
+                                                        "DELIVERING",
+                                                        "SINGED"
+                                                    ]
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "description": "轨迹文本信息"
+                                                },
+                                                "time": {
+                                                    "type": "string",
+                                                    "description": "轨迹事件发生时间，请使用UTC时间",
+                                                    "format": "date-time"
+                                                },
+                                                "location": {
+                                                    "type": "string",
+                                                    "description": "轨迹发生所在地点，如城市: 上海"
+                                                },
+                                                "remark": {
+                                                    "type": "string",
+                                                    "description": "轨迹事件备注信息"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "jsonrpc"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "result": {
+                                    "type": "null",
+                                    "required": true
+                                },
+                                "error": {
+                                    "type": "object",
+                                    "required": [
+                                        "code",
+                                        "message"
+                                    ],
+                                    "description": "RPC出错信息，error和result同时只能出现一个",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "required": true,
+                                            "description": "错误代码，详情请查看附录错误代码表"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "required": true,
+                                            "description": "错误描述"
+                                        },
+                                        "data": {
+                                            "type": "any",
+                                            "description": "错误数据"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/openapi-yto/v1/provider/jsonrpc#getTrackingList": {
+            "post": {
+                "tags": [],
+                "summary": "getTrackingList",
+                "description": "查询已上传的包裹轨迹，该接口返回的result是List<TrackingEvent>",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "getTrackingList",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "method",
+                                "id",
+                                "jsonrpc",
+                                "params"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id，建议使用uuid"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "method": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "调用方法名 此处必须为getTrackingList",
+                                    "default": "getTrackingList"
+                                },
+                                "params": {
+                                    "type": "object",
+                                    "required": [
+                                        "parcelNo"
+                                    ],
+                                    "properties": {
+                                        "parcelNo": {
+                                            "type": "object",
+                                            "description": "包裹编号",
+                                            "properties": {
+                                                "value": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARCEL_NO",
+                                                        "ORDER_NO",
+                                                        "TRACKING_NO"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "jsonrpc"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "result": {
+                                    "type": "object",
+                                    "properties": {
+                                        "ytoNo": {
+                                            "type": "string"
+                                        },
+                                        "parcelNo": {
+                                            "type": "string"
+                                        },
+                                        "orderNo": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "description": "轨迹代码: \n UNKNOWN 未知, COLLECT 已拣货, SHIPPED 已发货, TAKEOFF 已起运, LANDING 已着陆, HANDOVER 已提货, CR_START 开始清关, CR_END 清关结束, DELIVERING 配送中, SINGED 已签收. \n (如果找不到对应代码，请使用UNKNOWN) "
+                                        },
+                                        "time": {
+                                            "type": "string",
+                                            "description": "轨迹事件发生时间，请使用UTC时间",
+                                            "format": "date-time"
+                                        },
+                                        "location": {
+                                            "type": "string",
+                                            "description": "轨迹发生所在地点，如城市: 上海"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "description": "轨迹文本信息"
+                                        },
+                                        "remark": {
+                                            "type": "string",
+                                            "description": "轨迹事件备注信息"
+                                        },
+                                        "uploadYtoFlag": {
+                                            "type": "integer",
+                                            "description": "是否上传到了yto, 0是未同步， 1是同步失败，2是同步成功"
+                                        }
+                                    }
+                                },
+                                "error": {
+                                    "type": "object",
+                                    "required": [
+                                        "code",
+                                        "message"
+                                    ],
+                                    "description": "RPC出错信息，error和result同时只能出现一个",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "required": true,
+                                            "description": "错误代码，详情请查看附录错误代码表"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "required": true,
+                                            "description": "错误描述"
+                                        },
+                                        "data": {
+                                            "type": "any",
+                                            "description": "错误数据"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/openapi-yto/v1/provider/jsonrpc#getLabel": {
+            "post": {
+                "tags": [],
+                "summary": "getLabel",
+                "description": "获取面单和面单请求. 通过queryParcelList可以查询没有面单的包裹单号，将这些单号作为本接口的输入，可以获取到电商对于面单的规格，大小，格式的请求数据，服务商可以根据电商的要求提供对应的面单",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "getLabel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "method",
+                                "id",
+                                "jsonrpc",
+                                "params"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id，建议使用uuid"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "method": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "调用方法名 此处必须为getLabel",
+                                    "default": "getLabel"
+                                },
+                                "params": {
+                                    "type": "object",
+                                    "required": [
+                                        "parcelNo"
+                                    ],
+                                    "properties": {
+                                        "parcelNo": {
+                                            "type": "object",
+                                            "description": "包裹编号",
+                                            "properties": {
+                                                "value": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARCEL_NO",
+                                                        "ORDER_NO",
+                                                        "TRACKING_NO"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "id",
+                                "jsonrpc"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "请求id"
+                                },
+                                "jsonrpc": {
+                                    "type": "string",
+                                    "required": true,
+                                    "description": "JSONRPC 协议规定，此处必须为2.0",
+                                    "default": "2.0"
+                                },
+                                "result": {
+                                    "type": "object",
+                                    "properties": {
+                                        "trackingNo": {
+                                            "type": "string",
+                                            "description": "包裹的国际快递单号"
+                                        },
+                                        "parcelNo": {
+                                            "type": "string",
+                                            "description": "面单对应的包裹单号"
+                                        },
+                                        "orderNo": {
+                                            "type": "string",
+                                            "description": "电商订单号"
+                                        },
+                                        "isReady": {
+                                            "type": "boolean",
+                                            "description": "面单是否已经生成: true已经生成、false尚未生成"
+                                        },
+                                        "labelType": {
+                                            "type": "string",
+                                            "description": "面单打印纸张类型: 1 特殊纸张(10*15厘米）、2 A4纸张(21*29.7厘米)、3 国内面单(18*10厘米)4 标签纸 (10*10厘米)、5 标签纸(8.05*9厘米)。目前仅支持3 国内面单(18*10厘米)，如有其他需要请与我们联系"
+                                        },
+                                        "labelFormat": {
+                                            "type": "string",
+                                            "description": "生成面单的格式: PDF文件、JPG文件。默认为PDF文件"
+                                        },
+                                        "labelContent": {
+                                            "type": "string",
+                                            "description": "生成面单文件的Base64的编码"
+                                        }
+                                    }
+                                },
+                                "error": {
+                                    "type": "object",
+                                    "required": [
+                                        "code",
+                                        "message"
+                                    ],
+                                    "description": "RPC出错信息，error和result同时只能出现一个",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "required": true,
+                                            "description": "错误代码，详情请查看附录错误代码表"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "required": true,
+                                            "description": "错误描述"
+                                        },
+                                        "data": {
+                                            "type": "any",
+                                            "description": "错误数据"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
