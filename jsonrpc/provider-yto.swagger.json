@@ -276,17 +276,17 @@
                 }
             }
         },
-        "/openapi-yto/v1/provider/jsonrpc#getTrackingList": {
+        "/openapi-yto/v1/provider/jsonrpc#getTracking": {
             "post": {
                 "tags": [],
-                "summary": "getTrackingList",
-                "description": "查询已上传的包裹轨迹，该接口返回的result是List<TrackingEvent>",
+                "summary": "getTracking",
+                "description": "查询已上传的包裹轨迹",
                 "consumes": [
                     "application/json"
                 ],
                 "parameters": [
                     {
-                        "name": "getTrackingList",
+                        "name": "getTracking",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -312,8 +312,8 @@
                                 "method": {
                                     "type": "string",
                                     "required": true,
-                                    "description": "调用方法名 此处必须为getTrackingList",
-                                    "default": "getTrackingList"
+                                    "description": "调用方法名 此处必须为getTracking",
+                                    "default": "getTracking"
                                 },
                                 "params": {
                                     "type": "object",
@@ -368,39 +368,68 @@
                                 "result": {
                                     "type": "object",
                                     "properties": {
-                                        "ytoNo": {
-                                            "type": "string"
-                                        },
-                                        "parcelNo": {
-                                            "type": "string"
+                                        "trackingNo": {
+                                            "type": "string",
+                                            "description": "国际物流单号"
                                         },
                                         "orderNo": {
-                                            "type": "string"
-                                        },
-                                        "code": {
                                             "type": "string",
-                                            "description": "轨迹代码: \n UNKNOWN 未知, COLLECT 已拣货, SHIPPED 已发货, TAKEOFF 已起运, LANDING 已着陆, HANDOVER 已提货, CR_START 开始清关, CR_END 清关结束, DELIVERING 配送中, SINGED 已签收. \n (如果找不到对应代码，请使用UNKNOWN) "
+                                            "description": "电商订单编号"
                                         },
-                                        "time": {
+                                        "parcelNo": {
                                             "type": "string",
-                                            "description": "轨迹事件发生时间，请使用UTC时间",
-                                            "format": "date-time"
+                                            "description": "包裹编号"
                                         },
-                                        "location": {
-                                            "type": "string",
-                                            "description": "轨迹发生所在地点，如城市: 上海"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "description": "轨迹文本信息"
-                                        },
-                                        "remark": {
-                                            "type": "string",
-                                            "description": "轨迹事件备注信息"
-                                        },
-                                        "uploadYtoFlag": {
-                                            "type": "integer",
-                                            "description": "是否上传到了yto, 0是未同步， 1是同步失败，2是同步成功"
+                                        "events": {
+                                            "type": "array",
+                                            "description": "事件列表",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "createTime": {
+                                                        "type": "string",
+                                                        "description": "记录时间",
+                                                        "format": "date-time"
+                                                    },
+                                                    "time": {
+                                                        "type": "string",
+                                                        "description": "事件发生时间",
+                                                        "format": "date-time"
+                                                    },
+                                                    "location": {
+                                                        "type": "string",
+                                                        "description": "事件发生地点"
+                                                    },
+                                                    "message": {
+                                                        "type": "string",
+                                                        "description": "事件描述文字"
+                                                    },
+                                                    "remark": {
+                                                        "type": "string",
+                                                        "description": "事件备注信息"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "description": "事件代码",
+                                                        "enum": [
+                                                            "UNKNOWN",
+                                                            "COLLECT",
+                                                            "SHIPPED",
+                                                            "TAKEOFF",
+                                                            "LANDING",
+                                                            "HANDOVER",
+                                                            "CR_START",
+                                                            "CR_END",
+                                                            "DELIVERING",
+                                                            "SINGED"
+                                                        ]
+                                                    },
+                                                    "uploadYtoFlag": {
+                                                        "type": "integer",
+                                                        "description": "是否上传到了yto, 0是未同步， 1是同步失败，2是同步成功"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 },
